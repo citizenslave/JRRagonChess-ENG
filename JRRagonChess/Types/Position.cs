@@ -1,6 +1,6 @@
 using JRRagonGames.JRRagonChess.BoardState;
 
-namespace JRRagonGames.JRRagonChess {
+namespace JRRagonGames.JRRagonChess.Types {
     public struct Position {
         public int rank, file;
 

@@ -1,4 +1,4 @@
-namespace JRRagonGames.JRRagonChess {
+namespace JRRagonGames.JRRagonChess.ChessUtils {
     public static class BoardSerializer {
         public static byte[] SerializeBoard(BoardState.Board board) {
             int[] pieces = board.PieceDataBySquare;

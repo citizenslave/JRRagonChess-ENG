@@ -1,29 +1,27 @@
 using System;
 using System.Collections.Generic;
 
+using JRRagonGames.JRRagonChess.Types;
 using JRRagonGames.JRRagonChess.BoardState;
 
+using static JRRagonGames.JRRagonChess.Types.Position;
 using static JRRagonGames.JRRagonChess.ChessUtils.FenUtility;
-using static JRRagonGames.JRRagonChess.Position;
+
 using static JRRagonGames.JRRagonChess.BoardState.Board.Constants;
 using static JRRagonGames.JRRagonChess.BoardState.Board.ActiveTeamUtil;
-using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase;
 using static JRRagonGames.JRRagonChess.BoardState.Board.ActiveTeamUtil.Constants;
 using static JRRagonGames.JRRagonChess.BoardState.Board.CastleRightsUtil.Constants;
+
+using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase;
 using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
 
 namespace JRRagonGames.JRRagonChess {
     public class ChessGame {
-        public enum GameState {
-            Running = 0x00,
-            Stalemate = 0x01,
-            Checkmate = 0x02,
-            Progress = 0x03,
-            Material = 0x04,
-            Pending = 0xFF,
-        }
-
+        public int this[int boardTileIndex] => CurrentBoardState[boardTileIndex];
         public GameState CurrentGameState { get; private set; }
+        public ChessTeam ActiveTeam => CurrentBoardState.ActiveChessTeam;
+        public ChessTeam OtherTeam => CurrentBoardState.OtherChessTeam;
+        public string FenCode => ExtractCurrentFen(CurrentBoardState);
         public Board CurrentBoardState { get; private set; }
 
         #region Move List
@@ -50,6 +48,11 @@ namespace JRRagonGames.JRRagonChess {
         public List<ChessMove> GetAllLegalMoves() => new MoveGenerator(this).GenerateAllMoves();
         public List<ChessMove> GetLegalMovesFrom(Position position) => new List<ChessMove>();
         public List<ChessMove> GetPseudoLegalMovesFrom(Position position) => GetPseudoLegalMovesFromPosition(position, CurrentBoardState);
+
+        public int CapturedPieceIndex(ChessMove move) => move.Flag switch {
+            ChessMove.MoveFlag.EnPassant => move.EndPosition.Index - (GetDirectionMultiplier(OtherTeam) * FileCount),
+            _ => move.EndPosition.Index
+        };
 
         public void ExecuteMove(ChessMove move, bool simulated = false) {
             int fromIndex = move.StartPosition.Index;
@@ -81,11 +84,27 @@ namespace JRRagonGames.JRRagonChess {
             MoveGenerator endGameSimulator = new MoveGenerator(this);
             if (endGameSimulator.GenerateAllMoves().Count == 0) EndGame();
 
+
+
+
+
+
             /// TODO: Implement this properly.  The flag will immediately end the game and the straight counter
             /// overflows at 127, 23 plys before the progress draw is arbitrated.  The HT counter needs at least
             /// one more bit (which could be used to represent the flag in the game data)
             if (CurrentBoardState.HalfTurn > 100) CurrentGameState = GameState.Progress;
             //else if (CurrentBoardState.HalfTurn < 100 && CurrentGameState == GameState.Progress) CurrentGameState = GameState.Running;
+
+
+
+
+
+
+
+
+
+
+
 
             /// TODO: Implement more of this.  Two kings is the obvious material draw, but the minor piece cases
             /// need to be handled as well and this is not doing that.
@@ -94,6 +113,17 @@ namespace JRRagonGames.JRRagonChess {
                 if (nibble != 0) pieceCounter++;
             }
             if (pieceCounter == 2) CurrentGameState = GameState.Material;
+
+
+
+
+
+
+            /// TODO: 3-5 Fold Repetition Draw Condition
+
+
+
+
         }
 
         private void EndGame() {
@@ -136,7 +166,7 @@ namespace JRRagonGames.JRRagonChess {
 
             // TODO: Unnecessary?  Rule checks are presumed to have already happened to allow a king to jump two files.
             int pieceToMove = CurrentBoardState[move.StartPosition.Index];
-            int pieceToMoveTeam = GetPieceTeam(pieceToMove);
+            int pieceToMoveTeam = GetPieceTeamRaw(pieceToMove);
             bool isQueenside = move.StartPosition.file > move.EndPosition.file;
 
             if (CurrentBoardState.GetCastleRights(pieceToMoveTeam, isQueenside)) return ChessMove.MoveFlag.Castle;

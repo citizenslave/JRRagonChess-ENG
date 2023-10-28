@@ -1,3 +1,4 @@
+using JRRagonGames.JRRagonChess.Types;
 using System;
 using System.Collections.Generic;
 using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
@@ -45,7 +46,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
             if ((PieceType | PieceTeam) != teamValidationPiece) return false;
             
             int pieceToCapture = currentBoardState[move.EndPosition.Index];
-            int endSquareTeam = GetPieceTeam(pieceToCapture);
+            int endSquareTeam = GetPieceTeamRaw(pieceToCapture);
             if (pieceToCapture > 0 && PieceTeam == endSquareTeam) return false;
 
             return true;
@@ -58,7 +59,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
         private static ChessPieceBase PieceFactory(Position startPosition, Board currentBoardState) {
             int pieceToMove = currentBoardState[startPosition.Index];
-            int pieceTeam = GetPieceTeam(pieceToMove);
+            int pieceTeam = GetPieceTeamRaw(pieceToMove);
             int pieceType = GetPieceType(pieceToMove);
             
             return pieceType switch {
@@ -78,7 +79,9 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
         public static char GetFenCode(int piece) => FenIndex[piece];
 
-        public static int GetPieceTeam(int piece) => piece & ChessPieceTeamMask;
+        public static int GetPieceTeamRaw(int piece) => piece & ChessPieceTeamMask;
+
+        public static ChessTeam GetTeamFromNibble(int nibble) => (ChessTeam)(GetPieceTeamRaw(nibble) >> TeamIndexOffset);
 
         public static int GetPieceType(int piece) => piece & ChessPieceTypeMask;
     }

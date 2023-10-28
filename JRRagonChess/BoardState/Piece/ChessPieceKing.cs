@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
 using static JRRagonGames.JRRagonChess.BoardState.Board.Constants;
-using static JRRagonGames.JRRagonChess.Position;
+using static JRRagonGames.JRRagonChess.Types.Position;
 using System;
+using JRRagonGames.JRRagonChess.Types;
 
 namespace JRRagonGames.JRRagonChess.BoardState.Piece {
     internal class ChessPieceKing : ChessPieceBase {
@@ -21,7 +22,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
                 if (Math.Abs(toFile - fromFile) > 1) continue;
 
                 int pieceNibbleAtTarget = currentBoardState[targetIndex];
-                if (pieceNibbleAtTarget == 0 || GetPieceTeam(pieceNibbleAtTarget) != PieceTeam)
+                if (pieceNibbleAtTarget == 0 || GetPieceTeamRaw(pieceNibbleAtTarget) != PieceTeam)
                     moves.Add(new ChessMove(PiecePosition, targetPosition));
             }
 

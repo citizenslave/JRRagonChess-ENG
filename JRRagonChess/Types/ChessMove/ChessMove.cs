@@ -1,7 +1,7 @@
 using JRRagonGames.JRRagonChess.Utilities;
-using static JRRagonGames.JRRagonChess.ChessMove.MoveFlag;
+using static JRRagonGames.JRRagonChess.Types.ChessMove.MoveFlag;
 
-namespace JRRagonGames.JRRagonChess {
+namespace JRRagonGames.JRRagonChess.Types {
     public readonly partial struct ChessMove {
         public readonly ushort moveData;
 
@@ -17,7 +17,7 @@ namespace JRRagonGames.JRRagonChess {
             public const int FlagMask = 0b1111 << MoveOffset.FlagIndexOffset;
         }
 
-        public ChessMove(ushort _moveData) { this.moveData = _moveData; }
+        public ChessMove(ushort _moveData) { moveData = _moveData; }
 
         public ChessMove(Position start, Position end, int flag = NoMoveFlag) {
             moveData = (ushort)(0 |
@@ -29,9 +29,9 @@ namespace JRRagonGames.JRRagonChess {
 
         public ChessMove(string moveText) {
             moveData = (ushort)(0 |
-                (Position.GetIndex(moveText[..2]) << MoveOffset.StartIndexOffset) |
-                (Position.GetIndex(moveText[2..]) << MoveOffset.EndIndexOffset) |
-                (char.ToLower(moveText[^1]) switch {
+                Position.GetIndex(moveText[..2]) << MoveOffset.StartIndexOffset |
+                Position.GetIndex(moveText[2..]) << MoveOffset.EndIndexOffset |
+                char.ToLower(moveText[^1]) switch {
                     'q' => QueenPromotion,
                     'b' => BishopPromotion,
                     'r' => RookPromotion,
@@ -40,7 +40,7 @@ namespace JRRagonGames.JRRagonChess {
                     'd' => DoublePush,
                     'e' => EnPassant,
                     _ => NoMoveFlag,
-                } << MoveOffset.FlagIndexOffset) |
+                } << MoveOffset.FlagIndexOffset |
             0);
         }
 
@@ -72,17 +72,15 @@ namespace JRRagonGames.JRRagonChess {
             );
         }
 
-        public override string ToString() {
-            return ToString(false);
-        }
+        public override string ToString() => ToString(false);
 
         public string ToString(bool useFullLAN) => Flag switch {
-            MoveFlag.Castle => useFullLAN ? (EndPosition.file > StartPosition.file ? "O-O" : "O-O-O") : GetMoveText(),
-            MoveFlag.EnPassant => GetMoveText() + (useFullLAN ? "ep" : ""),
-            MoveFlag.KnightPromotion => GetMoveText() + "N",
-            MoveFlag.RookPromotion => GetMoveText() + "R",
-            MoveFlag.BishopPromotion => GetMoveText() + "B",
-            MoveFlag.QueenPromotion => GetMoveText() + "Q",
+            Castle => useFullLAN ? EndPosition.file > StartPosition.file ? "O-O" : "O-O-O" : GetMoveText(),
+            EnPassant => GetMoveText() + (useFullLAN ? "ep" : ""),
+            KnightPromotion => GetMoveText() + "N",
+            RookPromotion => GetMoveText() + "R",
+            BishopPromotion => GetMoveText() + "B",
+            QueenPromotion => GetMoveText() + "Q",
             _ => GetMoveText(),
         };
 

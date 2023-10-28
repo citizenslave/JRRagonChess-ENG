@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using JRRagonGames.JRRagonChess.BoardState;
 using JRRagonGames.JRRagonChess.BoardState.Piece;
-
+using JRRagonGames.JRRagonChess.Types;
 using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
 
 namespace JRRagonGames.JRRagonChess {
@@ -18,11 +18,14 @@ namespace JRRagonGames.JRRagonChess {
 
             int[] tiles = currentBoard.PieceDataBySquare;
             for (int tileIndex = 0; tileIndex < tiles.Length; tileIndex++) {
+
                 int pieceNibble = tiles[tileIndex];
                 bool hasPiece = pieceNibble != ChessPieceNone;
+
                 int activeTeamPieces = currentBoard.ActiveTeamPiece;
-                int pieceTeam = ChessPieceBase.GetPieceTeam(pieceNibble);
+                int pieceTeam = ChessPieceBase.GetPieceTeamRaw(pieceNibble);
                 bool isOwnedPiece = pieceTeam == activeTeamPieces;
+
                 bool canMoveFromPosition = hasPiece && isOwnedPiece;
                 
                 if (canMoveFromPosition)
@@ -30,11 +33,9 @@ namespace JRRagonGames.JRRagonChess {
                         ChessPieceBase.GetPseudoLegalMovesFromPosition(
                             Position.GetPositionFromIndex(tileIndex),
                             currentBoard
-                        )
+                        ).FindAll(move => !legal || IsLegalMove(move))
                     );
             }
-
-            if (legal) allMoves = allMoves.FindAll(move => IsLegalMove(move));
 
             return allMoves;
         }

@@ -2,7 +2,7 @@ using static JRRagonGames.JRRagonChess.Utilities.BitUtilities;
 using static JRRagonGames.JRRagonChess.BoardState.Board.EnPassantUtil;
 using static JRRagonGames.JRRagonChess.BoardState.Board.EnPassantUtil.Constants;
 using static JRRagonGames.JRRagonChess.BoardState.Board.ActiveTeamUtil.Constants;
-
+using JRRagonGames.JRRagonChess.Types;
 
 namespace JRRagonGames.JRRagonChess.BoardState {
     public partial class Board {

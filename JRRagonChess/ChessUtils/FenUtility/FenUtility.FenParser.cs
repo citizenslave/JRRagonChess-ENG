@@ -8,6 +8,7 @@ using static JRRagonGames.JRRagonChess.BoardState.Board.TurnCountUtil;
 using static JRRagonGames.JRRagonChess.BoardState.Board.ActiveTeamUtil.Constants;
 using static JRRagonGames.JRRagonChess.BoardState.Board.CastleRightsUtil.Constants;
 using static JRRagonGames.JRRagonChess.BoardState.Board.EnPassantUtil.Constants;
+using JRRagonGames.JRRagonChess.Types;
 
 namespace JRRagonGames.JRRagonChess.ChessUtils {
     public static partial class FenUtility {

@@ -1,15 +1,16 @@
+using System;
+using System.Collections.Generic;
+
 using JRRagonGames.JRRagonChess.BoardState;
 
-using static JRRagonGames.JRRagonChess.Utilities.FenUtility;
-using static JRRagonGames.JRRagonChess.BoardState.Position;
+using static JRRagonGames.JRRagonChess.ChessUtils.FenUtility;
+using static JRRagonGames.JRRagonChess.Position;
 using static JRRagonGames.JRRagonChess.BoardState.Board.Constants;
 using static JRRagonGames.JRRagonChess.BoardState.Board.ActiveTeamUtil;
 using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase;
 using static JRRagonGames.JRRagonChess.BoardState.Board.ActiveTeamUtil.Constants;
 using static JRRagonGames.JRRagonChess.BoardState.Board.CastleRightsUtil.Constants;
 using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
-using System.Collections.Generic;
-using System;
 
 namespace JRRagonGames.JRRagonChess {
     public class ChessGame {
@@ -26,10 +27,8 @@ namespace JRRagonGames.JRRagonChess {
         public Board CurrentBoardState { get; private set; }
 
         #region Move List
-        private readonly List<ChessMove> _moveList = new List<ChessMove>();
-        public IReadOnlyList<ChessMove> MoveList {
-            get => _moveList.AsReadOnly();
-        }
+        public IReadOnlyList<ChessMove> MoveList => moveList.AsReadOnly();
+        private readonly List<ChessMove> moveList = new List<ChessMove>();
         #endregion
 
         #region Constructors
@@ -44,7 +43,7 @@ namespace JRRagonGames.JRRagonChess {
         #endregion
 
         public void SetBoardState(Board state) {
-            _moveList.Clear();
+            moveList.Clear();
             CurrentBoardState = state;
         }
 
@@ -66,7 +65,7 @@ namespace JRRagonGames.JRRagonChess {
 
             CurrentBoardState[fromIndex] = 0;
             CurrentBoardState[toIndex] = pieceToMove;
-            _moveList.Add(move);
+            moveList.Add(move);
 
             CurrentBoardState.EnPassant = 0;
             UpdateCastleRights(fromIndex, toIndex);
@@ -245,6 +244,6 @@ namespace JRRagonGames.JRRagonChess {
 
         public override string ToString() =>
             $"{CurrentGameState}:\n{CurrentBoardState}\n{ExtractCurrentFen(CurrentBoardState)} moves " +
-                string.Join(' ', _moveList.ConvertAll(m => m.ToString()));
+                string.Join(' ', moveList.ConvertAll(m => m.ToString()));
     }
 }

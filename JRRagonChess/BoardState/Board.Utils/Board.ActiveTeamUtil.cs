@@ -1,8 +1,10 @@
 using static JRRagonGames.JRRagonChess.Utilities.BitUtilities;
 using static JRRagonGames.JRRagonChess.BoardState.Board.ActiveTeamUtil.Constants;
 using JRRagonGames.JRRagonChess.BoardState.Piece;
+using JRRagonGames.JRRagonChess.ChessUtils;
 
-namespace JRRagonGames.JRRagonChess.BoardState {
+namespace JRRagonGames.JRRagonChess.BoardState
+{
     public partial class Board { 
         public static class ActiveTeamUtil {
             public static class Constants {

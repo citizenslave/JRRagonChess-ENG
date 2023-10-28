@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
 using static JRRagonGames.JRRagonChess.BoardState.Board.Constants;
-using static JRRagonGames.JRRagonChess.BoardState.Position;
+using static JRRagonGames.JRRagonChess.Position;
 using System;
 
 namespace JRRagonGames.JRRagonChess.BoardState.Piece {

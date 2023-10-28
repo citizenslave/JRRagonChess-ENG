@@ -1,6 +1,6 @@
 using JRRagonGames.JRRagonChess.BoardState;
 
-namespace JRRagonGames.JRRagonChess.Utilities {
+namespace JRRagonGames.JRRagonChess.ChessUtils {
     public static partial class FenUtility {
         public const string startpos = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 

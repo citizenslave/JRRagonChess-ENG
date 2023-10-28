@@ -9,7 +9,7 @@ using static JRRagonGames.JRRagonChess.BoardState.Board.ActiveTeamUtil.Constants
 using static JRRagonGames.JRRagonChess.BoardState.Board.CastleRightsUtil.Constants;
 using static JRRagonGames.JRRagonChess.BoardState.Board.EnPassantUtil.Constants;
 
-namespace JRRagonGames.JRRagonChess.Utilities {
+namespace JRRagonGames.JRRagonChess.ChessUtils {
     public static partial class FenUtility {
         private static class FenParser {
             private static class FenIndex {

@@ -1,5 +1,4 @@
 using JRRagonGames.JRRagonChess.Utilities;
-using JRRagonGames.JRRagonChess.BoardState;
 using static JRRagonGames.JRRagonChess.ChessMove.MoveFlag;
 
 namespace JRRagonGames.JRRagonChess {

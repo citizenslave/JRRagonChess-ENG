@@ -1,7 +1,7 @@
 ﻿using JRRagonGames.JRRagonChess.BoardState;
 using JRRagonGames.JRRagonChess.BoardState.Piece;
 
-namespace JRRagonGames.JRRagonChess {
+namespace JRRagonGames.JRRagonChess.ChessUtils {
     public enum ChessTeam {
         WhiteTeam = ChessGameTeam.WhiteGameTeam,
         BlackTeam = ChessGameTeam.BlackGameTeam,

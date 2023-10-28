@@ -1,12 +1,10 @@
-using System;
-
-namespace JRRagonGames.JRRagonChess.BoardState {
+namespace JRRagonGames.JRRagonChess.ChessUtils {
     public static class BoardSerializer {
-        public static byte[] SerializeBoard(Board board) {
+        public static byte[] SerializeBoard(BoardState.Board board) {
             int[] pieces = board.PieceDataBySquare;
             int gameData = board.GameData;
 
-            byte[] serializedBoard = new byte[(pieces.Length / 2) + (sizeof(int) - 1)];
+            byte[] serializedBoard = new byte[pieces.Length / 2 + (sizeof(int) - 1)];
             int byteIndex = 0, nibbleSize = 4, byteOffset = nibbleSize, pieceIndex = 0;
 
             while (pieceIndex < pieces.Length) {
@@ -23,16 +21,16 @@ namespace JRRagonGames.JRRagonChess.BoardState {
             return serializedBoard;
         }
 
-        public static Board DeserializeBoard(byte[] serializedBoard) {
-            int[] pieces = new int[Board.Constants.TileCount];
+        public static BoardState.Board DeserializeBoard(byte[] serializedBoard) {
+            int[] pieces = new int[BoardState.Board.Constants.TileCount];
             int gameData;
 
-            for (int pieceIndex = 0; pieceIndex < Board.Constants.TileCount; pieceIndex++)
-                pieces[pieceIndex] = (serializedBoard[pieceIndex / 2] >> (((pieceIndex % 2) ^ 1) * 4)) & 0xf;
+            for (int pieceIndex = 0; pieceIndex < BoardState.Board.Constants.TileCount; pieceIndex++)
+                pieces[pieceIndex] = serializedBoard[pieceIndex / 2] >> (pieceIndex % 2 ^ 1) * 4 & 0xf;
 
             gameData = serializedBoard[32] << 16 | serializedBoard[33] << 8 | serializedBoard[34];
 
-            return new Board(pieces, gameData);
+            return new BoardState.Board(pieces, gameData);
         }
     }
 }

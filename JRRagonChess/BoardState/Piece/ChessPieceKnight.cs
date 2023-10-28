@@ -2,6 +2,7 @@
 using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
 using static JRRagonGames.JRRagonChess.BoardState.Board.Constants;
 using System;
+using JRRagonGames.JRRagonChess.Types;
 
 namespace JRRagonGames.JRRagonChess.BoardState.Piece {
     internal class ChessPieceKnight : ChessPieceBase {
@@ -22,7 +23,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
                 if (Math.Abs(toFile - fromFile) > 2) continue;
 
                 int pieceNibbleAtTarget = currentBoardState[targetIndex];
-                if (pieceNibbleAtTarget == 0 || GetPieceTeam(pieceNibbleAtTarget) != PieceTeam)
+                if (pieceNibbleAtTarget == 0 || GetPieceTeamRaw(pieceNibbleAtTarget) != PieceTeam)
                     moves.Add(new ChessMove(PiecePosition, targetPosition));
             }
 

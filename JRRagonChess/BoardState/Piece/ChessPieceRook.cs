@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
 using static JRRagonGames.JRRagonChess.BoardState.Board.Constants;
+using JRRagonGames.JRRagonChess.Types;
 
 namespace JRRagonGames.JRRagonChess.BoardState.Piece {
     internal class ChessPieceRook : ChessPieceBase {
@@ -15,7 +16,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
                     int targetIndex = searchIndex + moveOffset;
                     Position targetPosition = Position.GetPositionFromIndex(targetIndex);
                     int pieceNibbleAtTarget = currentBoardState[searchIndex + moveOffset];
-                    if (pieceNibbleAtTarget == ChessPieceNone || GetPieceTeam(pieceNibbleAtTarget) != PieceTeam)
+                    if (pieceNibbleAtTarget == ChessPieceNone || GetPieceTeamRaw(pieceNibbleAtTarget) != PieceTeam)
                         moves.Add(new ChessMove(PiecePosition, targetPosition));
                     if (pieceNibbleAtTarget != ChessPieceNone) break;
                 }

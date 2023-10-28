@@ -1,6 +1,7 @@
 using static JRRagonGames.JRRagonChess.Utilities.BitUtilities;
 using static JRRagonGames.JRRagonChess.BoardState.Board.ActiveTeamUtil.Constants;
 using JRRagonGames.JRRagonChess.BoardState.Piece;
+using JRRagonGames.JRRagonChess.Types;
 
 namespace JRRagonGames.JRRagonChess.BoardState {
     public partial class Board { 
@@ -13,6 +14,7 @@ namespace JRRagonGames.JRRagonChess.BoardState {
             }
 
             public static int GetDirectionMultiplier(int team) => team == Constants.WhiteTurn ? 1 : -1;
+            public static int GetDirectionMultiplier(ChessTeam team) => GetDirectionMultiplier((int)team);
         }
 
         public ChessTeam ActiveChessTeam { get => (ChessTeam)(ActiveTeam >> ActiveTeamOffset); }

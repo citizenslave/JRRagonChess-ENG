@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using JRRagonGames.JRRagonChess.Types;
+using System.Collections.Generic;
 using static JRRagonGames.JRRagonChess.BoardState.Board.ActiveTeamUtil;
 using static JRRagonGames.JRRagonChess.BoardState.Board.Constants;
 using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
@@ -24,7 +25,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
                 int pieceNibble = currentBoardState[targetIndex];
                 bool targetingPiece = pieceNibble != ChessPieceNone;
 
-                bool targetingOpponent = GetPieceTeam(pieceNibble) != PieceTeam;
+                bool targetingOpponent = GetPieceTeamRaw(pieceNibble) != PieceTeam;
                 bool targetingEnPassant = targetIndex == currentBoardState.EnPassantIndex && currentBoardState.HasEnPassant;
 
                 int toFile = PiecePosition.file + (-directionMultiplier * 8) + adjustedOffset;

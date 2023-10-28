@@ -1,6 +1,9 @@
-using System.Collections.Generic;
-using JRRagonGames.JRRagonChess.BoardState.Piece;
 using System;
+using System.Collections.Generic;
+
+using JRRagonGames.JRRagonChess.BoardState.Piece;
+using JRRagonGames.JRRagonChess.Types;
+
 using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
 
 namespace JRRagonGames.JRRagonChess.BoardState {
@@ -64,15 +67,15 @@ namespace JRRagonGames.JRRagonChess.BoardState {
         private readonly int[] pieceData;
 
         public Position ActiveKingPosition =>
-            FindPiece(ActiveTeam, ChessPieceKingId);
+            FindKing(ActiveTeam);
 
         public Position OtherKingPosition =>
-            FindPiece(OtherTeam, ChessPieceKingId);
+            FindKing(OtherTeam);
 
-        private Position FindPiece(int pieceTeam, int pieceType) =>
+        private Position FindKing(int pieceTeam) =>
             Position.GetPositionFromIndex(
-                new List<int>(pieceData).FindIndex(x =>
-                    x == ChessPieceBase.GetPieceNibble(pieceTeam, pieceType)
+                new List<int>(pieceData).FindIndex(
+                    pieceAtIndex => ChessPieceBase.GetPieceNibble(pieceTeam, ChessPieceKingId) == pieceAtIndex
                 )
             );
         #endregion

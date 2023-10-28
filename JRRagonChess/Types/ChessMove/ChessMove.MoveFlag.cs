@@ -1,4 +1,4 @@
-﻿namespace JRRagonGames.JRRagonChess {
+﻿namespace JRRagonGames.JRRagonChess.Types {
     public readonly partial struct ChessMove {
         public static class MoveFlag {
             public const int NoMoveFlag = 0x0;

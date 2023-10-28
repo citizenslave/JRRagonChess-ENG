@@ -1,4 +1,6 @@
-namespace JRRagonGames.JRRagonChess.BoardState {
+using JRRagonGames.JRRagonChess.BoardState;
+
+namespace JRRagonGames.JRRagonChess.Types {
     public struct Position {
         public int rank, file;
 
@@ -13,7 +15,7 @@ namespace JRRagonGames.JRRagonChess.BoardState {
         public override readonly string ToString() => GetNameFromPosition(file, rank);
 
         public static int GetIndex(string squareName) => GetPositionFromName(squareName).Index;
-        public static int GetIndex(int rank, int file) => (rank * Board.Constants.FileCount) + file;
+        public static int GetIndex(int rank, int file) => rank * Board.Constants.FileCount + file;
         public static int GetFileFromName(string name) => "abcdefgh".IndexOf(char.ToLower(name[0]));
         public static int GetRankFromName(string name) => (int)(char.GetNumericValue(name[1]) - 1);
         public static int GetFileFromIndex(int index) => index % Board.Constants.FileCount;

@@ -1,27 +1,9 @@
-using static JRRagonGames.JRRagonChess.Utilities.BitUtilities;
-using static JRRagonGames.JRRagonChess.BoardState.Board.HalfTurnUtil.Constants;
+using static JRRagonGames.Utilities.BitUtilities;
 
 namespace JRRagonGames.JRRagonChess.BoardState {
     public partial class Board {
-        public static class HalfTurnUtil {
-            public static class Constants {
-                public const int HalfTurnOffset = 0x08;
-                public const int HalfTurnMask = 0x00007f00; // 7 << 8
-            }
-
-            public static int PadHalfTurn(int halfTurn) =>
-                PadBits(
-                    halfTurn,
-                    HalfTurnOffset
-                );
-
-            public static string UnloadHalfTurns(int gameData) =>
-                GetBits(
-                    gameData,
-                    HalfTurnOffset,
-                    HalfTurnMask
-                ).ToString();
-        }
+        private const int HalfTurnOffset = 0x08;
+        private const int HalfTurnMask = 0x00007f00; // 7 << 8
 
         public int HalfTurn {
             get => GetBits(

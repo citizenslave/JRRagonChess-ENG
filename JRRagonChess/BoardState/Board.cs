@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using JRRagonGames.JRRagonChess.BoardState.Piece;
 using JRRagonGames.JRRagonChess.Types;
 
-using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
+using static JRRagonGames.JRRagonChess.Types.PieceUtil;
 
 namespace JRRagonGames.JRRagonChess.BoardState {
     public partial class Board {
@@ -55,8 +55,29 @@ namespace JRRagonGames.JRRagonChess.BoardState {
             TurnCount = _turnCount;
         }
 
+        public Board(
+            int[] _pieceData,
+            ChessTeam _activeTeam,
+            int _castleRights,
+            string _enPassantFileName,
+            int _halfTurn,
+            int _turnCount
+        ) {
+            pieceData = (int[])_pieceData.Clone();
+            GameData = 0 |
+                _castleRights |
+            0;
+
+            ActiveTeam = (int)_activeTeam << ActiveTeamOffset;
+            if (!string.IsNullOrEmpty(_enPassantFileName)) EnPassantName = _enPassantFileName;
+            HalfTurn = _halfTurn;
+            TurnCount = _turnCount;
+        }
+
         public Board Copy() => new Board((int[])pieceData.Clone(), GameData);
         #endregion
+
+
 
         #region Piece Data
         public int this[int squareIndex] {
@@ -64,21 +85,29 @@ namespace JRRagonGames.JRRagonChess.BoardState {
             set => pieceData[squareIndex] = value;
         }
         public int[] PieceDataBySquare { get => (int[])pieceData.Clone(); }
+
         private readonly int[] pieceData;
 
-        public Position ActiveKingPosition =>
-            FindKing(ActiveTeam);
+        #region King Finder
+        public Position ActiveKingPosition => FindKing(ActiveTeam);
+        public Position OtherKingPosition => FindKing(OtherTeam);
 
-        public Position OtherKingPosition =>
-            FindKing(OtherTeam);
-
-        private Position FindKing(int pieceTeam) =>
-            Position.GetPositionFromIndex(
-                new List<int>(pieceData).FindIndex(
-                    pieceAtIndex => ChessPieceBase.GetPieceNibble(pieceTeam, ChessPieceKingId) == pieceAtIndex
-                )
-            );
+        private Position FindKing(int pieceTeam) => Position.GetPositionFromIndex(
+            new List<int>(pieceData).FindIndex(
+                pieceAtIndex => ChessPieceBase.GetPieceNibble(pieceTeam, ChessPieceKingId) == pieceAtIndex
+            )
+        );
         #endregion
+
+        #region Move Generation and Validation
+        public List<ChessMove> GetPseudoLegalMovesFrom(Position startPosition) =>
+            ChessPieceBase.GetPseudoLegalMovesFromPosition(startPosition, this);
+
+        public bool IsMoveValid(ChessMove move) => ChessPieceBase.IsMoveValid(move, this);
+        #endregion
+        #endregion
+
+
 
         public override string ToString() {
             byte[] _gameData = BitConverter.GetBytes(GameData);

@@ -1,5 +1,7 @@
 ﻿using JRRagonGames.JRRagonChess.BoardState;
-using JRRagonGames.JRRagonChess.BoardState.Piece;
+
+using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase;
+using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
 
 namespace JRRagonGames.JRRagonChess.Types {
     public enum GameState {
@@ -12,25 +14,9 @@ namespace JRRagonGames.JRRagonChess.Types {
     }
 
     public enum ChessTeam {
-        WhiteTeam = ChessGameTeam.WhiteGameTeam,
-        BlackTeam = ChessGameTeam.BlackGameTeam,
-        NoneTeam = ChessGameTeam.NoneGameTeam,
-    }
-
-    public static class ChessGameTeam {
-        public const byte WhiteGameTeam = 0x00;
-        public const byte BlackGameTeam = 0x01;
-        public const byte NoneGameTeam = 0xFF;
-    }
-
-    public static class ChessPieceTeam {
-        public const int ChessPieceWhite = ChessPieceBase.Constants.ChessPieceWhite;
-        public const int ChessPieceBlack = ChessPieceBase.Constants.ChessPieceBlack;
-    }
-
-    public static class ActiveTeam {
-        public const int ActiveTeamWhite = Board.ActiveTeamUtil.Constants.WhiteTurn;
-        public const int ActiveTeamBlack = Board.ActiveTeamUtil.Constants.BlackTurn;
+        WhiteTeam = 0x00,
+        BlackTeam = 0x01,
+        NoneTeam = 0xFF,
     }
 
     public static class BoardConstants {
@@ -39,13 +25,19 @@ namespace JRRagonGames.JRRagonChess.Types {
     }
 
     public static class PieceUtil {
-        public const int ChessPieceNone = ChessPieceBase.Constants.ChessPieceNone;
+        public const int ChessPieceNone = Constants.ChessPieceNone;
+        public const int ChessPiecePawnId = Constants.ChessPiecePawnId;
+        public const int ChessPieceRookId = Constants.ChessPieceRookId;
+        public const int ChessPieceKingId = Constants.ChessPieceKingId;
 
-        public const int ChessPieceWhite = ChessPieceBase.Constants.ChessPieceWhite;
-        public const int ChessPieceBlack = ChessPieceBase.Constants.ChessPieceBlack;
+        public const int ChessPieceWhite = Constants.ChessPieceWhite;
+        public const int ChessPieceBlack = Constants.ChessPieceBlack;
 
-        public const int TeamIndexOffset = ChessPieceBase.Constants.TeamIndexOffset;
+        public const int TeamIndexOffset = Constants.TeamIndexOffset;
+        public const int TeamPieceOffset = Constants.TeamPieceOffset;
 
-        public static ChessTeam GetTeamFromNibble(int nibble) => ChessPieceBase.GetTeamFromNibble(nibble);
+        public static ChessTeam ExtractTeamFromNibble(int nibble) => GetTeamFromNibble(nibble);
+        public static int ExtractPieceFromNibble(int nibble) => GetPieceType(nibble);
+        public static int GeneratePieceNibble(ChessTeam team, int pieceId) => GetPieceNibble((int)team << TeamIndexOffset, pieceId);
     }
 }

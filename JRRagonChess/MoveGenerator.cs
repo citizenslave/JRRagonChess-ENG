@@ -2,7 +2,7 @@
 using JRRagonGames.JRRagonChess.BoardState;
 using JRRagonGames.JRRagonChess.BoardState.Piece;
 using JRRagonGames.JRRagonChess.Types;
-using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
+using static JRRagonGames.JRRagonChess.Types.PieceUtil;
 
 namespace JRRagonGames.JRRagonChess {
     public class MoveGenerator {
@@ -22,17 +22,16 @@ namespace JRRagonGames.JRRagonChess {
                 int pieceNibble = tiles[tileIndex];
                 bool hasPiece = pieceNibble != ChessPieceNone;
 
-                int activeTeamPieces = currentBoard.ActiveTeamPiece;
-                int pieceTeam = ChessPieceBase.GetPieceTeamRaw(pieceNibble);
+                ChessTeam activeTeamPieces = currentBoard.ActiveChessTeam;
+                ChessTeam pieceTeam = ExtractTeamFromNibble(pieceNibble);
                 bool isOwnedPiece = pieceTeam == activeTeamPieces;
 
                 bool canMoveFromPosition = hasPiece && isOwnedPiece;
                 
                 if (canMoveFromPosition)
                     allMoves.AddRange(
-                        ChessPieceBase.GetPseudoLegalMovesFromPosition(
-                            Position.GetPositionFromIndex(tileIndex),
-                            currentBoard
+                        currentGame.GetPseudoLegalMovesFrom(
+                            Position.GetPositionFromIndex(tileIndex)
                         ).FindAll(move => !legal || IsLegalMove(move))
                     );
             }

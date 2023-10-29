@@ -1,7 +1,6 @@
-using static JRRagonGames.JRRagonChess.Utilities.BitUtilities;
+using static JRRagonGames.Utilities.BitUtilities;
 using static JRRagonGames.JRRagonChess.BoardState.Board.CastleRightsUtil.Constants;
-using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
-using JRRagonGames.JRRagonChess.BoardState.Piece;
+using static JRRagonGames.JRRagonChess.Types.PieceUtil;
 
 namespace JRRagonGames.JRRagonChess.BoardState {
     public partial class Board {

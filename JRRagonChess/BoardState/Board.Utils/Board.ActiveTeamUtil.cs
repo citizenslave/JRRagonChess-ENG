@@ -1,44 +1,34 @@
-using static JRRagonGames.JRRagonChess.Utilities.BitUtilities;
-using static JRRagonGames.JRRagonChess.BoardState.Board.ActiveTeamUtil.Constants;
-using JRRagonGames.JRRagonChess.BoardState.Piece;
 using JRRagonGames.JRRagonChess.Types;
 
+using static JRRagonGames.Utilities.BitUtilities;
+
+using static JRRagonGames.JRRagonChess.Types.PieceUtil;
+
 namespace JRRagonGames.JRRagonChess.BoardState {
-    public partial class Board { 
-        public static class ActiveTeamUtil {
-            public static class Constants {
-                public const int ActiveTeamOffset = 0x0f;
-                public const int ActiveTeamMask = 0x00008000; // 1 << 15
-                public const int WhiteTurn = 0x00000000;
-                public const int BlackTurn = 0x00008000;
-            }
-
-            public static int GetDirectionMultiplier(int team) => team == Constants.WhiteTurn ? 1 : -1;
-            public static int GetDirectionMultiplier(ChessTeam team) => GetDirectionMultiplier((int)team);
-        }
-
-        public ChessTeam ActiveChessTeam { get => (ChessTeam)(ActiveTeam >> ActiveTeamOffset); }
-        public ChessTeam OtherChessTeam {  get => (ChessTeam)(OtherTeam >> ActiveTeamOffset); }
+    public partial class Board {
+        private const int ActiveTeamOffset = 0x0f;
+        private const int ActiveTeamMask = 0x00008000; // 1 << 15
+        private const int WhiteTurn = 0x00000000;
+        private const int BlackTurn = 0x00008000;
 
         public int ActiveTeam {
             get => GameData & ActiveTeamMask;
             set => GameData = SetBits(GameData, value, ActiveTeamMask);
         }
+        public int OtherTeam => ActiveTeam ^ ActiveTeamMask;
 
-        public int ActiveTeamPiece {
-            get => ActiveTeam >> ChessPieceBase.Constants.TeamPieceOffset;
-        }
+        public ChessTeam ActiveChessTeam => (ChessTeam)(ActiveTeam >> ActiveTeamOffset);
+        public ChessTeam OtherChessTeam => (ChessTeam)(OtherTeam >> ActiveTeamOffset);
 
-        public int OtherTeam {
-            get => ActiveTeam ^ ActiveTeamMask;
-        }
 
-        public int OtherTeamPiece {
-            get => OtherTeam >> ChessPieceBase.Constants.TeamPieceOffset;
-        }
 
-        public int TeamRankMultiplier {
-            get => ActiveTeam >> ActiveTeamOffset;
-        }
+        public int ActiveTeamPiece => ActiveTeam >> TeamPieceOffset;
+        public int OtherTeamPiece => OtherTeam >> TeamPieceOffset;
+
+
+
+        public int TeamRankMultiplier => ActiveTeam >> ActiveTeamOffset;
+
+        public static int TeamDirectionMultiplier(ChessTeam team) => team == ChessTeam.WhiteTeam ? 1 : -1;
     }
 }

@@ -5,15 +5,14 @@ using JRRagonGames.JRRagonChess.Types;
 using JRRagonGames.JRRagonChess.BoardState;
 
 using static JRRagonGames.JRRagonChess.Types.Position;
+using static JRRagonGames.JRRagonChess.Types.BoardConstants;
+
+using static JRRagonGames.JRRagonChess.Types.PieceUtil;
+
 using static JRRagonGames.JRRagonChess.ChessUtils.FenUtility;
 
-using static JRRagonGames.JRRagonChess.BoardState.Board.Constants;
-using static JRRagonGames.JRRagonChess.BoardState.Board.ActiveTeamUtil;
-using static JRRagonGames.JRRagonChess.BoardState.Board.ActiveTeamUtil.Constants;
+using static JRRagonGames.JRRagonChess.BoardState.Board;
 using static JRRagonGames.JRRagonChess.BoardState.Board.CastleRightsUtil.Constants;
-
-using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase;
-using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
 
 namespace JRRagonGames.JRRagonChess {
     public class ChessGame {
@@ -47,10 +46,21 @@ namespace JRRagonGames.JRRagonChess {
 
         public List<ChessMove> GetAllLegalMoves() => new MoveGenerator(this).GenerateAllMoves();
         public List<ChessMove> GetLegalMovesFrom(Position position) => new List<ChessMove>();
-        public List<ChessMove> GetPseudoLegalMovesFrom(Position position) => GetPseudoLegalMovesFromPosition(position, CurrentBoardState);
+        public List<ChessMove> GetPseudoLegalMovesFrom(Position position) => CurrentBoardState.GetPseudoLegalMovesFrom(position);
 
         public int CapturedPieceIndex(ChessMove move) => move.Flag switch {
-            ChessMove.MoveFlag.EnPassant => move.EndPosition.Index - (GetDirectionMultiplier(OtherTeam) * FileCount),
+
+
+
+
+            /// TODO: Move this into the Board to remove the direct reference to the ActiveTeamUtil function.
+            /// 
+
+            ChessMove.MoveFlag.EnPassant => move.EndPosition.Index - (TeamDirectionMultiplier(OtherTeam) * FileCount),
+
+
+
+
             _ => move.EndPosition.Index
         };
 
@@ -58,7 +68,7 @@ namespace JRRagonGames.JRRagonChess {
             int fromIndex = move.StartPosition.Index;
             int toIndex = move.EndPosition.Index;
             
-            if (!IsMoveValid(move, CurrentBoardState)) return;
+            if (!CurrentBoardState.IsMoveValid(move)) return;
             
             int pieceToMove = CurrentBoardState[fromIndex];
             int flag = DetectMoveFlags(move);
@@ -74,7 +84,7 @@ namespace JRRagonGames.JRRagonChess {
             UpdateCastleRights(fromIndex, toIndex);
             ProcessMoveFlags(toIndex, flag);
 
-            if (CurrentBoardState.ActiveTeam == BlackTurn) CurrentBoardState.TurnCount++;
+            if (CurrentBoardState.ActiveChessTeam == ChessTeam.BlackTeam) CurrentBoardState.TurnCount++;
             CurrentBoardState.ActiveTeam = CurrentBoardState.OtherTeam;
 
             if (!simulated) UpdateGameState();
@@ -140,7 +150,7 @@ namespace JRRagonGames.JRRagonChess {
 
         #region MoveFlag Detection
         private int DetectMoveFlags(ChessMove move) {
-            int pieceToMoveType = GetPieceType(CurrentBoardState[move.StartPosition.Index]);
+            int pieceToMoveType = ExtractPieceFromNibble(CurrentBoardState[move.StartPosition.Index]);
 
             if (pieceToMoveType == ChessPiecePawnId) return DetectPawnFlags(move);
             if (pieceToMoveType == ChessPieceKingId) return DetectCastleFlag(move);
@@ -166,10 +176,10 @@ namespace JRRagonGames.JRRagonChess {
 
             // TODO: Unnecessary?  Rule checks are presumed to have already happened to allow a king to jump two files.
             int pieceToMove = CurrentBoardState[move.StartPosition.Index];
-            int pieceToMoveTeam = GetPieceTeamRaw(pieceToMove);
+            ChessTeam pieceToMoveTeam = PieceUtil.ExtractTeamFromNibble(pieceToMove);
             bool isQueenside = move.StartPosition.file > move.EndPosition.file;
 
-            if (CurrentBoardState.GetCastleRights(pieceToMoveTeam, isQueenside)) return ChessMove.MoveFlag.Castle;
+            if (CurrentBoardState.GetCastleRights((int)pieceToMoveTeam << TeamIndexOffset, isQueenside)) return ChessMove.MoveFlag.Castle;
 
             return move.Flag;
         }
@@ -177,7 +187,7 @@ namespace JRRagonGames.JRRagonChess {
 
         #region Game State Updates
         private static bool IsHalfTurnReset(int pieceToMove, int pieceToCapture) =>
-            pieceToCapture > 0 || GetPieceType(pieceToMove) == ChessPiecePawnId;
+            pieceToCapture > 0 || ExtractPieceFromNibble(pieceToMove) == ChessPiecePawnId;
 
         private void UpdateCastleRights(int fromIndex, int toIndex) {
             int fromRank = GetRankFromIndex(fromIndex),
@@ -223,7 +233,7 @@ namespace JRRagonGames.JRRagonChess {
 
         #region MoveFlag Processing
         private void ProcessMoveFlags(int toIndex, int flag) {
-            int enPassantFileOffset = (FileCount * GetDirectionMultiplier(CurrentBoardState.ActiveTeam));
+            int enPassantFileOffset = FileCount * TeamDirectionMultiplier(ActiveTeam);
             int enPassantIndex = toIndex - enPassantFileOffset;
 
             switch (flag) {
@@ -240,7 +250,7 @@ namespace JRRagonGames.JRRagonChess {
                 case ChessMove.MoveFlag.BishopPromotion:
                 case ChessMove.MoveFlag.KnightPromotion:
                 case ChessMove.MoveFlag.RookPromotion:
-                    CurrentBoardState[toIndex] = GetPieceNibble(CurrentBoardState.ActiveTeam, flag);
+                    CurrentBoardState[toIndex] = GeneratePieceNibble(ActiveTeam, flag);
                     break;
                 default: break;
             }
@@ -268,7 +278,7 @@ namespace JRRagonGames.JRRagonChess {
 
             CurrentBoardState[rookIndex] = 0;
             CurrentBoardState[rookTargetIndex] =
-                GetPieceNibble(CurrentBoardState.ActiveTeam, ChessPieceRookId);
+                GeneratePieceNibble(ActiveTeam, ChessPieceRookId);
         }
         #endregion
 

@@ -1,14 +1,21 @@
-using JRRagonGames.JRRagonChess.Types;
 using System;
 using System.Collections.Generic;
+
+using JRRagonGames.JRRagonChess.Types;
+
 using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
 
 namespace JRRagonGames.JRRagonChess.BoardState.Piece {
     public partial class ChessPieceBase {
+
+
+
         protected int PieceType;
         protected int PieceTeam;
         protected int TeamIndex;
         protected Position PiecePosition;
+
+
 
         public ChessPieceBase(int type, int team, Position position) {
             PieceType = type;
@@ -17,12 +24,16 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
             PiecePosition = position;
         }
 
+
+
         protected readonly int[] moveOffsets = new int[] { -9, -7, 7, 9, -8, -1, 1, 8 };
 
         protected virtual List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) => new List<ChessMove>();
 
         public static List<ChessMove> GetPseudoLegalMovesFromPosition(Position startPosition, Board currentBoardState) =>
             PieceFactory(startPosition, currentBoardState).GetPseudoLegalMovesForPiece(currentBoardState);
+
+
 
         protected static bool IsValidSquare(int initialIndex, int moveOffset) {
             int targetIndex = initialIndex + moveOffset;
@@ -35,9 +46,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
             return true;
         }
 
-        public static bool IsMoveValid(ChessMove move, Board currentBoardState) {
-            return PieceFactory(move.StartPosition, currentBoardState).IsMoveLegal(move, currentBoardState);
-        }
+
 
         protected virtual bool IsMoveLegal(ChessMove move, Board currentBoardState) {
             if (PieceType == ChessPieceNone) return false;
@@ -52,10 +61,13 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
             return true;
         }
 
-        protected static bool TryAddMove(ChessMove move, Board currentBoard, List<ChessMove> moves) {
-            moves.Add(move);
-            return true;
+
+
+        public static bool IsMoveValid(ChessMove move, Board currentBoardState) {
+            return PieceFactory(move.StartPosition, currentBoardState).IsMoveLegal(move, currentBoardState);
         }
+
+
 
         private static ChessPieceBase PieceFactory(Position startPosition, Board currentBoardState) {
             int pieceToMove = currentBoardState[startPosition.Index];
@@ -73,15 +85,27 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
             };
         }
 
+
+
         public static int GetPieceNibble(char pieceFenCode) => FenIndex.IndexOf(pieceFenCode);
 
         public static int GetPieceNibble(int activeTeam, int pieceType) => pieceType | (activeTeam >> TeamPieceOffset);
 
+
+
         public static char GetFenCode(int piece) => FenIndex[piece];
+
+
+
+
+
+
 
         public static int GetPieceTeamRaw(int piece) => piece & ChessPieceTeamMask;
 
         public static ChessTeam GetTeamFromNibble(int nibble) => (ChessTeam)(GetPieceTeamRaw(nibble) >> TeamIndexOffset);
+
+
 
         public static int GetPieceType(int piece) => piece & ChessPieceTypeMask;
     }

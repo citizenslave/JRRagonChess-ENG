@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
     <BaseOutputPath>C:\Users\wmcva\Unity Projects\JRRagonChess v0.2\Assets\Plugins</BaseOutputPath>
+    <RootNamespace>JRRagonGames</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

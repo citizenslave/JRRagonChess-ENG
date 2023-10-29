@@ -22,12 +22,12 @@ namespace JRRagonGames.JRRagonChess {
                 int pieceNibble = tiles[tileIndex];
                 bool hasPiece = pieceNibble != ChessPieceNone;
 
-                ChessTeam activeTeamPieces = currentBoard.ActiveChessTeam;
+                ChessTeam activeTeamPieces = currentGame.ActiveTeam;
                 ChessTeam pieceTeam = ExtractTeamFromNibble(pieceNibble);
                 bool isOwnedPiece = pieceTeam == activeTeamPieces;
 
                 bool canMoveFromPosition = hasPiece && isOwnedPiece;
-                
+
                 if (canMoveFromPosition)
                     allMoves.AddRange(
                         currentGame.GetPseudoLegalMovesFrom(

@@ -15,7 +15,13 @@ namespace JRRagonGames.Utilities {
             int initialValue,
             int setBits,
             int mask
-        ) => initialValue & ~mask | setBits;
+        ) => initialValue & ~mask | (setBits & mask);
+
+        public static int ToggleBits(
+            int initialValue,
+            int mask,
+            bool value
+        ) => value ? SetBits(initialValue, mask, mask) : SetBits(initialValue, 0, mask);
 
         public static int ShiftBits(
             int value,

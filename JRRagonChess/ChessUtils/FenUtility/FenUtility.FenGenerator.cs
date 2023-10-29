@@ -4,8 +4,6 @@ using JRRagonGames.JRRagonChess.BoardState.Piece;
 using JRRagonGames.JRRagonChess.Types;
 using static JRRagonGames.JRRagonChess.Types.BoardConstants;
 
-using static JRRagonGames.JRRagonChess.BoardState.Board.CastleRightsUtil.Constants;
-
 namespace JRRagonGames.JRRagonChess.ChessUtils {
     public static partial class FenUtility {
         private static class FenGenerator {
@@ -58,11 +56,11 @@ namespace JRRagonGames.JRRagonChess.ChessUtils {
                 boardData.ActiveChessTeam != ChessTeam.BlackTeam ? "w" : "b";
 
             private static string GetCastleRights(Board boardData) =>
-                (boardData.GameData & CastleMask) == 0 ? "-" :
-                    ((boardData.GameData & WhiteKingsCastle) != 0 ? "K" : "") +
-                    ((boardData.GameData & WhiteQueenCastle) != 0 ? "Q" : "") +
-                    ((boardData.GameData & BlackKingsCastle) != 0 ? "k" : "") +
-                    ((boardData.GameData & BlackQueenCastle) != 0 ? "q" : "") +
+                boardData.CastleRights == 0 ? "-" :
+                    (boardData.CastleRightsWhiteKing ? "K" : "") +
+                    (boardData.CastleRightsWhiteQueen ? "Q" : "") +
+                    (boardData.CastleRightsBlackKing ? "k" : "") +
+                    (boardData.CastleRightsBlackQueen ? "q" : "") +
                 "";
 
             private static string GetEnPassant(Board boardData) =>

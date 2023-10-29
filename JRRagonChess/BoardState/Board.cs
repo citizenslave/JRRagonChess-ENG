@@ -89,12 +89,12 @@ namespace JRRagonGames.JRRagonChess.BoardState {
         private readonly int[] pieceData;
 
         #region King Finder
-        public Position ActiveKingPosition => FindKing(ActiveTeam);
-        public Position OtherKingPosition => FindKing(OtherTeam);
+        public Position ActiveKingPosition => FindKing(ActiveChessTeam);
+        public Position OtherKingPosition => FindKing(OtherChessTeam);
 
-        private Position FindKing(int pieceTeam) => Position.GetPositionFromIndex(
+        private Position FindKing(ChessTeam team) => Position.GetPositionFromIndex(
             new List<int>(pieceData).FindIndex(
-                pieceAtIndex => ChessPieceBase.GetPieceNibble(pieceTeam, ChessPieceKingId) == pieceAtIndex
+                pieceAtIndex => ChessPieceBase.GetPieceNibble(team, ChessPieceKingId) == pieceAtIndex
             )
         );
         #endregion

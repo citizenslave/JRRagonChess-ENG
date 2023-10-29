@@ -51,7 +51,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
         protected virtual bool IsMoveLegal(ChessMove move, Board currentBoardState) {
             if (PieceType == ChessPieceNone) return false;
             
-            int teamValidationPiece = GetPieceNibble(currentBoardState.ActiveTeam, PieceType);
+            int teamValidationPiece = GetPieceNibble(currentBoardState.ActiveChessTeam, PieceType);
             if ((PieceType | PieceTeam) != teamValidationPiece) return false;
             
             int pieceToCapture = currentBoardState[move.EndPosition.Index];
@@ -89,7 +89,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
         public static int GetPieceNibble(char pieceFenCode) => FenIndex.IndexOf(pieceFenCode);
 
-        public static int GetPieceNibble(int activeTeam, int pieceType) => pieceType | (activeTeam >> TeamPieceOffset);
+        public static int GetPieceNibble(ChessTeam team, int pieceType) => pieceType | ((int)team << TeamIndexOffset);
 
 
 

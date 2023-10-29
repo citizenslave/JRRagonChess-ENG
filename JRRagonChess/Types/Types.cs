@@ -24,6 +24,11 @@ namespace JRRagonGames.JRRagonChess.Types {
         public const int TileCount = Board.Constants.TileCount;
     }
 
+    public static class CastleFlagConstants {
+        public const int KingsCastle = Board.WhiteKingsCastle;
+        public const int QueenCastle = Board.WhiteQueenCastle;
+    }
+
     public static class PieceUtil {
         public const int ChessPieceNone = Constants.ChessPieceNone;
         public const int ChessPiecePawnId = Constants.ChessPiecePawnId;
@@ -38,6 +43,6 @@ namespace JRRagonGames.JRRagonChess.Types {
 
         public static ChessTeam ExtractTeamFromNibble(int nibble) => GetTeamFromNibble(nibble);
         public static int ExtractPieceFromNibble(int nibble) => GetPieceType(nibble);
-        public static int GeneratePieceNibble(ChessTeam team, int pieceId) => GetPieceNibble((int)team << TeamIndexOffset, pieceId);
+        public static int GeneratePieceNibble(ChessTeam team, int pieceId) => GetPieceNibble(team, pieceId);
     }
 }

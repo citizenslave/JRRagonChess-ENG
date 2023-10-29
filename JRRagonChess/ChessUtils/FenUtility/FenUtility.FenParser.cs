@@ -7,7 +7,7 @@ using static JRRagonGames.JRRagonChess.Types.BoardConstants;
 
 
 
-using static JRRagonGames.JRRagonChess.BoardState.Board.CastleRightsUtil.Constants;
+using static JRRagonGames.JRRagonChess.BoardState.Board;
 
 namespace JRRagonGames.JRRagonChess.ChessUtils {
     public static partial class FenUtility {

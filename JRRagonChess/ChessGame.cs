@@ -4,15 +4,12 @@ using System.Collections.Generic;
 using JRRagonGames.JRRagonChess.Types;
 using JRRagonGames.JRRagonChess.BoardState;
 
+using static JRRagonGames.JRRagonChess.ChessUtils.FenUtility;
+
 using static JRRagonGames.JRRagonChess.Types.Position;
 using static JRRagonGames.JRRagonChess.Types.BoardConstants;
 
 using static JRRagonGames.JRRagonChess.Types.PieceUtil;
-
-using static JRRagonGames.JRRagonChess.ChessUtils.FenUtility;
-
-using static JRRagonGames.JRRagonChess.BoardState.Board;
-using static JRRagonGames.JRRagonChess.BoardState.Board.CastleRightsUtil.Constants;
 
 namespace JRRagonGames.JRRagonChess {
     public class ChessGame {
@@ -26,6 +23,10 @@ namespace JRRagonGames.JRRagonChess {
         #region Move List
         public IReadOnlyList<ChessMove> MoveList => moveList.AsReadOnly();
         private readonly List<ChessMove> moveList = new List<ChessMove>();
+
+        public List<ChessMove> GetAllLegalMoves() => new MoveGenerator(this).GenerateAllMoves();
+        public List<ChessMove> GetLegalMovesFrom(Position position) => new List<ChessMove>();
+        public List<ChessMove> GetPseudoLegalMovesFrom(Position position) => CurrentBoardState.GetPseudoLegalMovesFrom(position);
         #endregion
 
         #region Constructors
@@ -34,7 +35,7 @@ namespace JRRagonGames.JRRagonChess {
         public ChessGame(string fenCode) : this(ParseFen(fenCode)) { }
 
         public ChessGame(Board boardState, bool isSimulated = false) {
-            SetBoardState((CurrentBoardState = boardState));
+            SetBoardState(CurrentBoardState = boardState);
             if (!isSimulated) UpdateGameState();
         }
         #endregion
@@ -44,9 +45,7 @@ namespace JRRagonGames.JRRagonChess {
             CurrentBoardState = state;
         }
 
-        public List<ChessMove> GetAllLegalMoves() => new MoveGenerator(this).GenerateAllMoves();
-        public List<ChessMove> GetLegalMovesFrom(Position position) => new List<ChessMove>();
-        public List<ChessMove> GetPseudoLegalMovesFrom(Position position) => CurrentBoardState.GetPseudoLegalMovesFrom(position);
+
 
         public int CapturedPieceIndex(ChessMove move) => move.Flag switch {
 
@@ -56,13 +55,15 @@ namespace JRRagonGames.JRRagonChess {
             /// TODO: Move this into the Board to remove the direct reference to the ActiveTeamUtil function.
             /// 
 
-            ChessMove.MoveFlag.EnPassant => move.EndPosition.Index - (TeamDirectionMultiplier(OtherTeam) * FileCount),
+            ChessMove.MoveFlag.EnPassant => move.EndPosition.Index - (Board.TeamDirectionMultiplier(OtherTeam) * FileCount),
 
 
 
 
             _ => move.EndPosition.Index
         };
+
+
 
         public void ExecuteMove(ChessMove move, bool simulated = false) {
             int fromIndex = move.StartPosition.Index;
@@ -130,6 +131,7 @@ namespace JRRagonGames.JRRagonChess {
 
 
             /// TODO: 3-5 Fold Repetition Draw Condition
+            /// 
 
 
 
@@ -176,10 +178,10 @@ namespace JRRagonGames.JRRagonChess {
 
             // TODO: Unnecessary?  Rule checks are presumed to have already happened to allow a king to jump two files.
             int pieceToMove = CurrentBoardState[move.StartPosition.Index];
-            ChessTeam pieceToMoveTeam = PieceUtil.ExtractTeamFromNibble(pieceToMove);
+            ChessTeam pieceToMoveTeam = ExtractTeamFromNibble(pieceToMove);
             bool isQueenside = move.StartPosition.file > move.EndPosition.file;
 
-            if (CurrentBoardState.GetCastleRights((int)pieceToMoveTeam << TeamIndexOffset, isQueenside)) return ChessMove.MoveFlag.Castle;
+            if (CurrentBoardState.GetCastleRights(pieceToMoveTeam, isQueenside)) return ChessMove.MoveFlag.Castle;
 
             return move.Flag;
         }
@@ -208,7 +210,7 @@ namespace JRRagonGames.JRRagonChess {
                 int fromFile = GetFileFromIndex(fromIndex),
                     toFile = GetFileFromIndex(toIndex),
                     teamShift = CurrentBoardState.TeamRankMultiplier * 2,
-                    bothRights = WhiteKingsCastle | WhiteQueenCastle;
+                    bothRights = CastleFlagConstants.KingsCastle | CastleFlagConstants.QueenCastle;
 
                 bool isTeamKing = isTeamHomeRank && fromFile == 4;
 
@@ -222,10 +224,15 @@ namespace JRRagonGames.JRRagonChess {
 
                     int otherShift = (CurrentBoardState.TeamRankMultiplier ^ 1) * 2;
 
-                    if (isTeamKingRook) CurrentBoardState.CastleRights &= ~(WhiteKingsCastle >> teamShift);
-                    if (isTeamQueenRook) CurrentBoardState.CastleRights &= ~(WhiteQueenCastle >> teamShift);
-                    if (isOtherKingRook) CurrentBoardState.CastleRights &= ~(WhiteKingsCastle >> otherShift);
-                    if (isOtherQueenRook) CurrentBoardState.CastleRights &= ~(WhiteQueenCastle >> otherShift);
+                    //if (isTeamKingRook) CurrentBoardState.ToggleCastleRights(ActiveTeam, false, false);
+                    //if (isTeamQueenRook) CurrentBoardState.ToggleCastleRights(ActiveTeam, true, false);
+                    //if (isOtherKingRook) CurrentBoardState.ToggleCastleRights(OtherTeam, false, false);
+                    //if (isOtherQueenRook) CurrentBoardState.ToggleCastleRights(OtherTeam, true, false);
+
+                    if (isTeamKingRook) CurrentBoardState.CastleRights &= ~(CastleFlagConstants.KingsCastle >> teamShift);
+                    if (isTeamQueenRook) CurrentBoardState.CastleRights &= ~(CastleFlagConstants.QueenCastle >> teamShift);
+                    if (isOtherKingRook) CurrentBoardState.CastleRights &= ~(CastleFlagConstants.KingsCastle >> otherShift);
+                    if (isOtherQueenRook) CurrentBoardState.CastleRights &= ~(CastleFlagConstants.QueenCastle >> otherShift);
                 }
             }
         }
@@ -233,7 +240,7 @@ namespace JRRagonGames.JRRagonChess {
 
         #region MoveFlag Processing
         private void ProcessMoveFlags(int toIndex, int flag) {
-            int enPassantFileOffset = FileCount * TeamDirectionMultiplier(ActiveTeam);
+            int enPassantFileOffset = FileCount * Board.TeamDirectionMultiplier(ActiveTeam);
             int enPassantIndex = toIndex - enPassantFileOffset;
 
             switch (flag) {

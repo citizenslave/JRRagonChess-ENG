@@ -1,7 +1,8 @@
 using JRRagonGames.JRRagonChess.BoardState;
-using JRRagonGames.JRRagonChess.BoardState.Piece;
 
 using JRRagonGames.JRRagonChess.Types;
+
+using static JRRagonGames.JRRagonChess.Types.PieceUtil;
 using static JRRagonGames.JRRagonChess.Types.BoardConstants;
 
 namespace JRRagonGames.JRRagonChess.ChessUtils {
@@ -37,7 +38,7 @@ namespace JRRagonGames.JRRagonChess.ChessUtils {
                     if (piece == 0) spaceCounter++;
                     else {
                         if (spaceCounter > 0) { positions += spaceCounter; spaceCounter = 0; }
-                        positions += ChessPieceBase.GetFenCode(piece);
+                        positions += GetFenCharFromNibble(piece);
                     }
 
 
@@ -56,7 +57,7 @@ namespace JRRagonGames.JRRagonChess.ChessUtils {
                 boardData.ActiveChessTeam != ChessTeam.BlackTeam ? "w" : "b";
 
             private static string GetCastleRights(Board boardData) =>
-                boardData.CastleRights == 0 ? "-" :
+                !boardData.HasCastleRights ? "-" :
                     (boardData.CastleRightsWhiteKing ? "K" : "") +
                     (boardData.CastleRightsWhiteQueen ? "Q" : "") +
                     (boardData.CastleRightsBlackKing ? "k" : "") +

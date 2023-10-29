@@ -17,17 +17,16 @@ namespace JRRagonGames.JRRagonChess.BoardState {
         }
         public int OtherTeam => ActiveTeam ^ ActiveTeamMask;
 
+
+
         public ChessTeam ActiveChessTeam => (ChessTeam)(ActiveTeam >> ActiveTeamOffset);
         public ChessTeam OtherChessTeam => (ChessTeam)(OtherTeam >> ActiveTeamOffset);
 
 
 
-        public int ActiveTeamPiece => ActiveTeam >> TeamPieceOffset;
-        public int OtherTeamPiece => OtherTeam >> TeamPieceOffset;
-
-
-
         public int TeamRankMultiplier => ActiveTeam >> ActiveTeamOffset;
+
+
 
         public static int TeamDirectionMultiplier(ChessTeam team) => team == ChessTeam.WhiteTeam ? 1 : -1;
     }

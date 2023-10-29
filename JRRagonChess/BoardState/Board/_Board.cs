@@ -58,16 +58,14 @@ namespace JRRagonGames.JRRagonChess.BoardState {
         public Board(
             int[] _pieceData,
             ChessTeam _activeTeam,
-            int _castleRights,
+            CastleRights _castleRights,
             string _enPassantFileName,
             int _halfTurn,
             int _turnCount
         ) {
             pieceData = (int[])_pieceData.Clone();
-            GameData = 0 |
-                _castleRights |
-            0;
 
+            AllCastleRights = _castleRights;
             ActiveTeam = (int)_activeTeam << ActiveTeamOffset;
             if (!string.IsNullOrEmpty(_enPassantFileName)) EnPassantName = _enPassantFileName;
             HalfTurn = _halfTurn;
@@ -94,7 +92,7 @@ namespace JRRagonGames.JRRagonChess.BoardState {
 
         private Position FindKing(ChessTeam team) => Position.GetPositionFromIndex(
             new List<int>(pieceData).FindIndex(
-                pieceAtIndex => ChessPieceBase.GetPieceNibble(team, ChessPieceKingId) == pieceAtIndex
+                pieceAtIndex => ChessPieceBase.GetPieceNibble(team, PieceKing) == pieceAtIndex
             )
         );
         #endregion

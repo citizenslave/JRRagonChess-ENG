@@ -7,16 +7,33 @@ namespace JRRagonGames.JRRagonChess.BoardState {
         private const int CastleOffset = 0x14;
         private const int CastleMask = 0x00f00000; // 4 << 20
 
-        public const int WhiteKingsCastle = 0x00800000;
-        public const int WhiteQueenCastle = 0x00400000;
-        public const int BlackKingsCastle = 0x00200000;
-        public const int BlackQueenCastle = 0x00100000;
+        private const int WhiteKingsCastle = 0x00800000;
+        private const int WhiteQueenCastle = 0x00400000;
+        private const int BlackKingsCastle = 0x00200000;
+        private const int BlackQueenCastle = 0x00100000;
 
         private const int TeamRightsOffsetMultiplier = 0x02;
 
-        public int CastleRights {
-            get => GameData & CastleMask;
-            set => GameData = SetBits(GameData, value, CastleMask);
+        public bool HasCastleRights => (GameData & CastleMask) > 0;
+
+        public CastleRights AllCastleRights {
+            get => new CastleRights(
+                CastleRightsWhiteKing,
+                CastleRightsWhiteQueen,
+                CastleRightsBlackKing,
+                CastleRightsBlackQueen
+            );
+
+            set => GameData = SetBits(
+                GameData,
+                0 |
+                    (value[CastleRights.WhiteKings] ? WhiteKingsCastle : 0) |
+                    (value[CastleRights.WhiteQueen] ? WhiteQueenCastle : 0) |
+                    (value[CastleRights.BlackKings] ? BlackKingsCastle : 0) |
+                    (value[CastleRights.BlackQueen] ? BlackQueenCastle : 0) |
+                0,
+                CastleMask
+            );
         }
 
 
@@ -43,7 +60,7 @@ namespace JRRagonGames.JRRagonChess.BoardState {
 
 
 
-        public void ToggleCastleRights(ChessTeam team, bool isQueenside, bool value) =>
+        public void RevokeCastleRights(ChessTeam team, bool isQueenside) =>
             GameData = ToggleBits(
                 GameData,
                 team switch {
@@ -51,12 +68,21 @@ namespace JRRagonGames.JRRagonChess.BoardState {
                     ChessTeam.BlackTeam => isQueenside ? BlackQueenCastle : BlackKingsCastle,
                     _ => 0
                 },
-                value
+                false
+            );
+        public void RevokeCastleRights(ChessTeam team) =>
+            GameData = ToggleBits(
+                GameData,
+                team switch {
+                    ChessTeam.WhiteTeam => WhiteKingsCastle | WhiteQueenCastle,
+                    ChessTeam.BlackTeam => BlackKingsCastle | BlackQueenCastle,
+                    _ => 0
+                },
+                false
             );
 
-        public int CastleRightsTeam(ChessTeam team) =>
+        public int GetCastleRights(ChessTeam team) =>
             GameData & ((WhiteKingsCastle | WhiteQueenCastle) >> ((int)team * TeamRightsOffsetMultiplier));
-
         public bool GetCastleRights(ChessTeam team, bool isQueenside) =>
             (GameData & ((isQueenside ? WhiteQueenCastle : WhiteKingsCastle) >> ((int)team * TeamRightsOffsetMultiplier))) > 0;
     }

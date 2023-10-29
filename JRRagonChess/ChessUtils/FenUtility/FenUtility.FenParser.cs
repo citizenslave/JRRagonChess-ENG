@@ -1,13 +1,13 @@
 using JRRagonGames.JRRagonChess.BoardState;
-using JRRagonGames.JRRagonChess.BoardState.Piece;
-
 using JRRagonGames.JRRagonChess.Types;
+
 using static JRRagonGames.JRRagonChess.Types.BoardConstants;
 
+using static JRRagonGames.JRRagonChess.Types.PieceUtil;
 
 
 
-using static JRRagonGames.JRRagonChess.BoardState.Board;
+
 
 namespace JRRagonGames.JRRagonChess.ChessUtils {
     public static partial class FenUtility {
@@ -34,7 +34,7 @@ namespace JRRagonGames.JRRagonChess.ChessUtils {
 
 
                 ChessTeam activeTeamData = GetActiveTeam(fenParts[activeTeamIndex]);
-                int castleRightsData = GetCastleRights(fenParts[castleRightsIndex]);
+                CastleRights castleRightsData = GetCastleRights(fenParts[castleRightsIndex]);
                 string enPassantData = GetEnPassantFile(fenParts[enPassantIndex]);
                 int halfTurnData = GetHalfTurns(fenParts[halfTurnIndex]);
                 int turnCountData = GetTurnCount(fenParts[turnCountIndex]);
@@ -65,7 +65,7 @@ namespace JRRagonGames.JRRagonChess.ChessUtils {
                     if (piece == '/') { fileIndex = 0; rankIndex--; continue; }
                     if (char.IsDigit(piece)) { fileIndex += (int)char.GetNumericValue(piece); continue; }
 
-                    piecesOnSquares[Position.GetIndex(rankIndex, fileIndex++)] = ChessPieceBase.GetPieceNibble(piece);
+                    piecesOnSquares[Position.GetIndex(rankIndex, fileIndex++)] = GetNibbleFromFen(piece);
                 }
 
                 return piecesOnSquares;
@@ -74,14 +74,14 @@ namespace JRRagonGames.JRRagonChess.ChessUtils {
             private static ChessTeam GetActiveTeam(string activeTeamFenData) =>
                 (activeTeamFenData == "w" ? ChessTeam.WhiteTeam : ChessTeam.BlackTeam);
 
-            private static int GetCastleRights(string castleFenData) =>
-                castleFenData == "-" ? 0
-                    : 0 |
-                        (castleFenData.Contains("K") ? WhiteKingsCastle : 0) |
-                        (castleFenData.Contains("Q") ? WhiteQueenCastle : 0) |
-                        (castleFenData.Contains("k") ? BlackKingsCastle : 0) |
-                        (castleFenData.Contains("q") ? BlackQueenCastle : 0) |
-                    0;
+            private static CastleRights GetCastleRights(string castleFenData) =>
+                castleFenData == "-" ? new CastleRights(false, false, false, false)
+                    : new CastleRights(
+                        castleFenData.Contains("K"),
+                        castleFenData.Contains("Q"),
+                        castleFenData.Contains("k"),
+                        castleFenData.Contains("q")
+                    );
 
             private static string GetEnPassantFile(string enPassantData) =>
                 enPassantData == "-" ? "" : enPassantData;

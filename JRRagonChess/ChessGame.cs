@@ -154,8 +154,8 @@ namespace JRRagonGames.JRRagonChess {
         private int DetectMoveFlags(ChessMove move) {
             int pieceToMoveType = ExtractPieceFromNibble(CurrentBoardState[move.StartPosition.Index]);
 
-            if (pieceToMoveType == ChessPiecePawnId) return DetectPawnFlags(move);
-            if (pieceToMoveType == ChessPieceKingId) return DetectCastleFlag(move);
+            if (pieceToMoveType == PiecePawn) return DetectPawnFlags(move);
+            if (pieceToMoveType == PieceKing) return DetectCastleFlag(move);
 
             return move.Flag;
         }
@@ -189,7 +189,7 @@ namespace JRRagonGames.JRRagonChess {
 
         #region Game State Updates
         private static bool IsHalfTurnReset(int pieceToMove, int pieceToCapture) =>
-            pieceToCapture > 0 || ExtractPieceFromNibble(pieceToMove) == ChessPiecePawnId;
+            pieceToCapture > 0 || ExtractPieceFromNibble(pieceToMove) == PiecePawn;
 
         private void UpdateCastleRights(int fromIndex, int toIndex) {
             int fromRank = GetRankFromIndex(fromIndex),
@@ -208,13 +208,11 @@ namespace JRRagonGames.JRRagonChess {
 
             if (isTeamHomeRank || isOtherHomeRank) {
                 int fromFile = GetFileFromIndex(fromIndex),
-                    toFile = GetFileFromIndex(toIndex),
-                    teamShift = CurrentBoardState.TeamRankMultiplier * 2,
-                    bothRights = CastleFlagConstants.KingsCastle | CastleFlagConstants.QueenCastle;
+                    toFile = GetFileFromIndex(toIndex);
 
                 bool isTeamKing = isTeamHomeRank && fromFile == 4;
 
-                if (isTeamKing) CurrentBoardState.CastleRights &= ~(bothRights >> teamShift);
+                if (isTeamKing) CurrentBoardState.RevokeCastleRights(ActiveTeam);
                 else {
                     bool isTeamQueenRook = isTeamHomeRank && fromFile == 0,
                         isTeamKingRook = isTeamHomeRank && fromFile == 7,
@@ -222,17 +220,10 @@ namespace JRRagonGames.JRRagonChess {
                         isOtherQueenRook = isOtherHomeRank && toFile == 0,
                         isOtherKingRook = isOtherHomeRank && toFile == 7;
 
-                    int otherShift = (CurrentBoardState.TeamRankMultiplier ^ 1) * 2;
-
-                    //if (isTeamKingRook) CurrentBoardState.ToggleCastleRights(ActiveTeam, false, false);
-                    //if (isTeamQueenRook) CurrentBoardState.ToggleCastleRights(ActiveTeam, true, false);
-                    //if (isOtherKingRook) CurrentBoardState.ToggleCastleRights(OtherTeam, false, false);
-                    //if (isOtherQueenRook) CurrentBoardState.ToggleCastleRights(OtherTeam, true, false);
-
-                    if (isTeamKingRook) CurrentBoardState.CastleRights &= ~(CastleFlagConstants.KingsCastle >> teamShift);
-                    if (isTeamQueenRook) CurrentBoardState.CastleRights &= ~(CastleFlagConstants.QueenCastle >> teamShift);
-                    if (isOtherKingRook) CurrentBoardState.CastleRights &= ~(CastleFlagConstants.KingsCastle >> otherShift);
-                    if (isOtherQueenRook) CurrentBoardState.CastleRights &= ~(CastleFlagConstants.QueenCastle >> otherShift);
+                    if (isTeamKingRook) CurrentBoardState.RevokeCastleRights(ActiveTeam, false);
+                    if (isTeamQueenRook) CurrentBoardState.RevokeCastleRights(ActiveTeam, true);
+                    if (isOtherKingRook) CurrentBoardState.RevokeCastleRights(OtherTeam, false);
+                    if (isOtherQueenRook) CurrentBoardState.RevokeCastleRights(OtherTeam, true);
                 }
             }
         }
@@ -285,7 +276,7 @@ namespace JRRagonGames.JRRagonChess {
 
             CurrentBoardState[rookIndex] = 0;
             CurrentBoardState[rookTargetIndex] =
-                GeneratePieceNibble(ActiveTeam, ChessPieceRookId);
+                GeneratePieceNibble(ActiveTeam, PieceRook);
         }
         #endregion
 

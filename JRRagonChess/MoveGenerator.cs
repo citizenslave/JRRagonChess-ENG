@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using JRRagonGames.JRRagonChess.BoardState;
-using JRRagonGames.JRRagonChess.BoardState.Piece;
+
 using JRRagonGames.JRRagonChess.Types;
+
 using static JRRagonGames.JRRagonChess.Types.PieceUtil;
 
 namespace JRRagonGames.JRRagonChess {
@@ -14,13 +14,12 @@ namespace JRRagonGames.JRRagonChess {
 
         public List<ChessMove> GenerateAllMoves(bool legal = true) {
             List<ChessMove> allMoves = new List<ChessMove>();
-            Board currentBoard = currentGame.CurrentBoardState;
 
-            int[] tiles = currentBoard.PieceDataBySquare;
+            int[] tiles = currentGame.CurrentBoardState.PieceDataBySquare;
             for (int tileIndex = 0; tileIndex < tiles.Length; tileIndex++) {
 
                 int pieceNibble = tiles[tileIndex];
-                bool hasPiece = pieceNibble != ChessPieceNone;
+                bool hasPiece = pieceNibble != PieceNone;
 
                 ChessTeam activeTeamPieces = currentGame.ActiveTeam;
                 ChessTeam pieceTeam = ExtractTeamFromNibble(pieceNibble);

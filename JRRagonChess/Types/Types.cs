@@ -24,25 +24,42 @@ namespace JRRagonGames.JRRagonChess.Types {
         public const int TileCount = Board.Constants.TileCount;
     }
 
-    public static class CastleFlagConstants {
-        public const int KingsCastle = Board.WhiteKingsCastle;
-        public const int QueenCastle = Board.WhiteQueenCastle;
+    public readonly struct CastleRights {
+        public static readonly int WhiteKings = 0x00;
+        public const int WhiteQueen = 0x01;
+        public const byte BlackKings = 0x02;
+        public const byte BlackQueen = 0x03;
+
+
+
+        public readonly bool[] rights;
+        public CastleRights(bool wk, bool wq, bool bk, bool bq)
+            : this(new bool[4] { wk, wq, bk, bq }) { }
+        private CastleRights(bool[] _rights) { rights = _rights; }
+
+
+
+        public bool this[int idx] {
+            get => rights[idx];
+            set => rights[idx] = value;
+        }
     }
 
     public static class PieceUtil {
-        public const int ChessPieceNone = Constants.ChessPieceNone;
-        public const int ChessPiecePawnId = Constants.ChessPiecePawnId;
-        public const int ChessPieceRookId = Constants.ChessPieceRookId;
-        public const int ChessPieceKingId = Constants.ChessPieceKingId;
+        public const int PieceNone = ChessPieceNone;
+        public const int PiecePawn = ChessPiecePawnId;
+        public const int PieceRook = ChessPieceRookId;
+        public const int PieceKing = ChessPieceKingId;
 
-        public const int ChessPieceWhite = Constants.ChessPieceWhite;
-        public const int ChessPieceBlack = Constants.ChessPieceBlack;
+        public const int PieceWhite = ChessPieceWhite;
+        public const int PieceBlack = ChessPieceBlack;
 
-        public const int TeamIndexOffset = Constants.TeamIndexOffset;
         public const int TeamPieceOffset = Constants.TeamPieceOffset;
 
         public static ChessTeam ExtractTeamFromNibble(int nibble) => GetTeamFromNibble(nibble);
         public static int ExtractPieceFromNibble(int nibble) => GetPieceType(nibble);
         public static int GeneratePieceNibble(ChessTeam team, int pieceId) => GetPieceNibble(team, pieceId);
+        public static int GetNibbleFromFen(char fenChar) => GetPieceNibble(fenChar);
+        public static char GetFenCharFromNibble(int nibble) => GetFenCode(nibble);
     }
 }

@@ -1,4 +1,4 @@
-namespace JRRagonGames.JRRagonChess.Utilities {
+namespace JRRagonGames.Utilities {
     public static class BitUtilities {
         public static int GetBits(
             int intValue,
@@ -15,12 +15,18 @@ namespace JRRagonGames.JRRagonChess.Utilities {
             int initialValue,
             int setBits,
             int mask
-        ) => (initialValue & ~mask) | setBits;
+        ) => initialValue & ~mask | (setBits & mask);
+
+        public static int ToggleBits(
+            int initialValue,
+            int mask,
+            bool value
+        ) => value ? SetBits(initialValue, mask, mask) : SetBits(initialValue, 0, mask);
 
         public static int ShiftBits(
             int value,
             int by
-        ) => (by > 0 ? value << by : value >> -by);
+        ) => by > 0 ? value << by : value >> -by;
 
         public static int FindLSB(int bits, int start = 0) {
             int counter = start;

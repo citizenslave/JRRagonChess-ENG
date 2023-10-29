@@ -1,6 +1,6 @@
 ﻿using JRRagonGames.JRRagonChess.Types;
 using System.Collections.Generic;
-using static JRRagonGames.JRRagonChess.BoardState.Board.ActiveTeamUtil;
+using static JRRagonGames.JRRagonChess.BoardState.Board;
 using static JRRagonGames.JRRagonChess.BoardState.Board.Constants;
 using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
 
@@ -16,7 +16,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
         protected override List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) {
             List<ChessMove> legalMoves = new List<ChessMove>();
 
-            int directionMultiplier = GetDirectionMultiplier(PieceTeam << TeamPieceOffset);
+            int directionMultiplier = TeamDirectionMultiplier((ChessTeam)TeamIndex);
 
             foreach (int moveOffset in captureOffsets) {
                 int adjustedOffset = moveOffset * directionMultiplier;
@@ -84,7 +84,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
         protected override bool IsMoveLegal(ChessMove move, Board currentBoardState) {
             if (!base.IsMoveLegal(move, currentBoardState)) return false;
 
-            int directionMultiplier = GetDirectionMultiplier(PieceTeam << TeamPieceOffset);
+            int directionMultiplier = TeamDirectionMultiplier((ChessTeam)TeamIndex);
 
             int moveIndexOffset = move.EndPosition.Index - move.StartPosition.Index;
             if (moveOffsets[0] != (directionMultiplier * moveIndexOffset)) {

@@ -1,4 +1,4 @@
-using JRRagonGames.JRRagonChess.Utilities;
+using JRRagonGames.Utilities;
 using static JRRagonGames.JRRagonChess.Types.ChessMove.MoveFlag;
 
 namespace JRRagonGames.JRRagonChess.Types {
@@ -44,33 +44,27 @@ namespace JRRagonGames.JRRagonChess.Types {
             0);
         }
 
-        public Position StartPosition {
-            get => Position.GetPositionFromIndex(
-                BitUtilities.GetBits(
-                    moveData,
-                    MoveOffset.StartIndexOffset,
-                    MoveMask.StartIndexMask
-                )
-            );
-        }
-
-        public Position EndPosition {
-            get => Position.GetPositionFromIndex(
-                BitUtilities.GetBits(
-                    moveData,
-                    MoveOffset.EndIndexOffset,
-                    MoveMask.EndIndexMask
-                )
-            );
-        }
-
-        public int Flag {
-            get => BitUtilities.GetBits(
+        public Position StartPosition => Position.GetPositionFromIndex(
+            BitUtilities.GetBits(
                 moveData,
-                MoveOffset.FlagIndexOffset,
-                MoveMask.FlagMask
-            );
-        }
+                MoveOffset.StartIndexOffset,
+                MoveMask.StartIndexMask
+            )
+        );
+
+        public Position EndPosition => Position.GetPositionFromIndex(
+            BitUtilities.GetBits(
+                moveData,
+                MoveOffset.EndIndexOffset,
+                MoveMask.EndIndexMask
+            )
+        );
+
+        public int Flag => BitUtilities.GetBits(
+            moveData,
+            MoveOffset.FlagIndexOffset,
+            MoveMask.FlagMask
+        );
 
         public override string ToString() => ToString(false);
 

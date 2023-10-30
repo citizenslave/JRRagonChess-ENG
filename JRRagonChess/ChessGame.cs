@@ -205,13 +205,13 @@ namespace JRRagonGames.JRRagonChess {
             int fromRank = GetRankFromIndex(fromIndex),
                 toRank = GetRankFromIndex(toIndex),
 
-                fileIndex = FileCount - 1,
+                homeRankIndex = FileCount - 1,
 
                 teamMultiplier = CurrentBoardState.TeamRankMultiplier,
                 otherMultiplier = CurrentBoardState.TeamRankMultiplier ^ 1,
 
-                teamHomeRank = teamMultiplier * fileIndex,
-                otherHomeRank = otherMultiplier * fileIndex;
+                teamHomeRank = teamMultiplier * homeRankIndex,
+                otherHomeRank = otherMultiplier * homeRankIndex;
 
             bool isTeamHomeRank = fromRank == teamHomeRank,
                 isOtherHomeRank = toRank == otherHomeRank;

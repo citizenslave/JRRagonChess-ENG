@@ -207,8 +207,8 @@ namespace JRRagonGames.JRRagonChess {
 
                 homeRankIndex = FileCount - 1,
 
-                teamMultiplier = CurrentBoardState.TeamRankMultiplier,
-                otherMultiplier = CurrentBoardState.TeamRankMultiplier ^ 1,
+                teamMultiplier = CurrentBoardState.ActiveTeamIndex,
+                otherMultiplier = CurrentBoardState.OtherTeamIndex,
 
                 teamHomeRank = teamMultiplier * homeRankIndex,
                 otherHomeRank = otherMultiplier * homeRankIndex;

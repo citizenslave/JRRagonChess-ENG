@@ -12,13 +12,13 @@ namespace JRRagonGames.JRRagonChess.BoardState {
             get => (ChessTeam)gameDataRegister[ActiveTeamMask];
             set => gameDataRegister[ActiveTeamMask] = (int)value;
         }
-        public ChessTeam OtherChessTeam {
-            get => (ChessTeam)((int)ActiveChessTeam ^ 1);
-        }
 
 
 
-        public int TeamRankMultiplier => (int)ActiveChessTeam;
+        public ChessTeam OtherChessTeam => (ChessTeam)((int)ActiveChessTeam ^ 1);
+
+        public int ActiveTeamIndex => (int)ActiveChessTeam;
+        public int OtherTeamIndex => (int)OtherChessTeam;
 
 
 

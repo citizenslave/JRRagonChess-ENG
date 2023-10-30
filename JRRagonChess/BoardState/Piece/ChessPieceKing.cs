@@ -26,8 +26,9 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
                     moves.Add(new ChessMove(PiecePosition, targetPosition));
             }
 
-            int castleRights = currentBoardState.GetCastleRights((ChessTeam)TeamIndex);
-            if (castleRights > 0) {
+
+
+            if (currentBoardState.TeamHasCastleRights((ChessTeam)TeamIndex)) {
                 if (currentBoardState.GetCastleRights((ChessTeam)TeamIndex, true)) {
                     int[] queensideCastleOffsets = new int[] { -1, -2, -3 };
                     bool isValid = true;
@@ -48,6 +49,8 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
                     if (isValid) moves.Add(new ChessMove(PiecePosition, PiecePosition.OffsetByIndex(2), ChessMove.MoveFlag.Castle));
                 }
             }
+
+
 
             return moves;
         }

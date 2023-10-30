@@ -30,7 +30,7 @@ namespace JRRagonGames.JRRagonChess.BoardState {
          * ht   :half turn counter
          * turn :turn counter
          */
-        public int GameData { get; private set; }
+        public int GameData { get => gameDataRegister.BitData; private set => gameDataRegister.BitData = value; }
 
         private readonly BitRegister gameDataRegister = new BitRegister(0);
         #endregion
@@ -91,7 +91,7 @@ namespace JRRagonGames.JRRagonChess.BoardState {
 
 
         public override string ToString() {
-            byte[] _gameData = BitConverter.GetBytes(GameData);
+            byte[] _gameData = BitConverter.GetBytes(gameDataRegister.BitData);
             Array.Reverse(_gameData);
             string boardBottom = $" ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n  A B C D E F G H\n   {BitConverter.ToString(_gameData)}",
                 boardView = $"  A B C D E F G H\n _________________\n{Constants.FileCount}";

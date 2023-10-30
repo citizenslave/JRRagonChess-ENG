@@ -14,10 +14,14 @@ using static JRRagonGames.JRRagonChess.Types.PieceUtil;
 namespace JRRagonGames.JRRagonChess {
     public class ChessGame {
         public int this[int boardTileIndex] => CurrentBoardState[boardTileIndex];
+
         public GameState CurrentGameState { get; private set; }
+
         public ChessTeam ActiveTeam => CurrentBoardState.ActiveChessTeam;
         public ChessTeam OtherTeam => CurrentBoardState.OtherChessTeam;
+
         public string FenCode => ExtractCurrentFen(CurrentBoardState);
+
         public Board CurrentBoardState { get; private set; }
 
         #region Move List
@@ -175,7 +179,14 @@ namespace JRRagonGames.JRRagonChess {
         private int DetectCastleFlag(ChessMove move) {
             if (Math.Abs(move.StartPosition.file - move.EndPosition.file) < 2) return move.Flag;
 
-            // TODO: Unnecessary?  Rule checks are presumed to have already happened to allow a king to jump two files.
+            /// TODO: #21 Free Placement Mode will have to worry about this.
+            /// 
+            /// If this is a generated move, then these conditions will always be met and trigger
+            /// castling.  The ChessGame itself, however, will allow moves that have not been
+            /// generated to be submitted and this code under those game conditions will set the
+            /// move flag and cause unpredictable behavior (removing pieces, spawning rooks) if
+            /// the change in file condition above is met.
+            /// 
             int pieceToMove = CurrentBoardState[move.StartPosition.Index];
             ChessTeam pieceToMoveTeam = ExtractTeamFromNibble(pieceToMove);
             bool isQueenside = move.StartPosition.file > move.EndPosition.file;

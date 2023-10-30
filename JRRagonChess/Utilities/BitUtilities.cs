@@ -28,10 +28,7 @@ namespace JRRagonGames.Utilities {
             int by
         ) => by > 0 ? value << by : value >> -by;
 
-        public static int FindLSB(int bits, int start = 0) {
-            int counter = start;
-            while (ShiftBits(bits, -counter) > 0 && (ShiftBits(bits, -counter) & 1) == 0) counter++;
-            return counter;
-        }
+        public static int FindLSB(int bits, int start = 0) =>
+            ((bits >> start) != 0 && ((bits >> start) & 1) == 0) ? FindLSB(bits, start + 1) : start;
     }
 }

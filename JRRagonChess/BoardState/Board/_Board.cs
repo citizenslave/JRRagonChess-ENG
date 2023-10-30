@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using JRRagonGames.JRRagonChess.BoardState.Piece;
 using JRRagonGames.JRRagonChess.Types;
-
+using JRRagonGames.Utilities;
 using static JRRagonGames.JRRagonChess.Types.PieceUtil;
 
 namespace JRRagonGames.JRRagonChess.BoardState {
@@ -31,29 +31,12 @@ namespace JRRagonGames.JRRagonChess.BoardState {
          * turn :turn counter
          */
         public int GameData { get; private set; }
+
+        private readonly BitRegister gameDataRegister = new BitRegister(0);
         #endregion
 
         #region Constructors & Factories
-        public Board(int[] _pieceData, int _GameData) { pieceData = _pieceData; GameData = _GameData; }
-
-        public Board(
-            int[] _pieceData,
-            int _activeTeam,
-            int _castleRights,
-            int _enPassant,
-            int _halfTurn,
-            int _turnCount
-        ) { 
-            pieceData = (int[])_pieceData.Clone();
-            GameData = 0 |
-                _activeTeam |
-                _castleRights |
-                _enPassant |
-            0;
-
-            HalfTurn = _halfTurn;
-            TurnCount = _turnCount;
-        }
+        public Board(int[] _pieceData, int _GameData) { pieceData = _pieceData; gameDataRegister.BitData = _GameData; }
 
         public Board(
             int[] _pieceData,
@@ -66,13 +49,13 @@ namespace JRRagonGames.JRRagonChess.BoardState {
             pieceData = (int[])_pieceData.Clone();
 
             AllCastleRights = _castleRights;
-            ActiveTeam = (int)_activeTeam << ActiveTeamOffset;
+            ActiveChessTeam = _activeTeam;
             if (!string.IsNullOrEmpty(_enPassantFileName)) EnPassantName = _enPassantFileName;
-            HalfTurn = _halfTurn;
+            HalfCount = _halfTurn;
             TurnCount = _turnCount;
         }
 
-        public Board Copy() => new Board((int[])pieceData.Clone(), GameData);
+        public Board Copy() => new Board((int[])pieceData.Clone(), gameDataRegister.BitData);
         #endregion
 
 

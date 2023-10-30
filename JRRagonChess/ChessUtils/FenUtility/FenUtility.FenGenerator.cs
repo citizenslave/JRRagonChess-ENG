@@ -68,7 +68,7 @@ namespace JRRagonGames.JRRagonChess.ChessUtils {
                 !boardData.HasEnPassant ? "-" : boardData.EnPassantName;
 
             private static string GetHalfTurns(Board boardData) =>
-                boardData.HalfTurn.ToString();
+                boardData.HalfCount.ToString();
 
             private static string GetTurnCount(Board boardData) =>
                 boardData.TurnCount.ToString();

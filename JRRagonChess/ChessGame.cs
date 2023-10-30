@@ -74,8 +74,8 @@ namespace JRRagonGames.JRRagonChess {
             int pieceToMove = CurrentBoardState[fromIndex];
             int flag = DetectMoveFlags(move);
 
-            if (IsHalfTurnReset(pieceToMove, CurrentBoardState[toIndex])) CurrentBoardState.HalfTurn = 0;
-            else CurrentBoardState.HalfTurn++;
+            if (IsHalfTurnReset(pieceToMove, CurrentBoardState[toIndex])) CurrentBoardState.HalfCount = 0;
+            else CurrentBoardState.HalfCount++;
 
             CurrentBoardState[fromIndex] = 0;
             CurrentBoardState[toIndex] = pieceToMove;
@@ -86,7 +86,7 @@ namespace JRRagonGames.JRRagonChess {
             ProcessMoveFlags(toIndex, flag);
 
             if (CurrentBoardState.ActiveChessTeam == ChessTeam.BlackTeam) CurrentBoardState.TurnCount++;
-            CurrentBoardState.ActiveTeam = CurrentBoardState.OtherTeam;
+            CurrentBoardState.ActiveChessTeam = CurrentBoardState.OtherChessTeam;
 
             if (!simulated) UpdateGameState();
         }
@@ -103,7 +103,7 @@ namespace JRRagonGames.JRRagonChess {
             /// TODO: Implement this properly.  The flag will immediately end the game and the straight counter
             /// overflows at 127, 23 plys before the progress draw is arbitrated.  The HT counter needs at least
             /// one more bit (which could be used to represent the flag in the game data)
-            if (CurrentBoardState.HalfTurn > 100) CurrentGameState = GameState.Progress;
+            else if (CurrentBoardState.HalfCount > 100) CurrentGameState = GameState.Progress;
             //else if (CurrentBoardState.HalfTurn < 100 && CurrentGameState == GameState.Progress) CurrentGameState = GameState.Running;
 
 
@@ -115,25 +115,25 @@ namespace JRRagonGames.JRRagonChess {
 
 
 
+            else {
+
+                /// TODO: Implement more of this.  Two kings is the obvious material draw, but the minor piece cases
+                /// need to be handled as well and this is not doing that.
+                int pieceCounter = 0;
+                foreach (int nibble in CurrentBoardState.PieceDataBySquare) {
+                    if (nibble != 0) pieceCounter++;
+                }
+                if (pieceCounter == 2) CurrentGameState = GameState.Material;
 
 
-            /// TODO: Implement more of this.  Two kings is the obvious material draw, but the minor piece cases
-            /// need to be handled as well and this is not doing that.
-            int pieceCounter = 0;
-            foreach (int nibble in CurrentBoardState.PieceDataBySquare) {
-                if (nibble != 0) pieceCounter++;
+
+
+
+
+                /// TODO: 3-5 Fold Repetition Draw Condition
+                /// 
+
             }
-            if (pieceCounter == 2) CurrentGameState = GameState.Material;
-
-
-
-
-
-
-            /// TODO: 3-5 Fold Repetition Draw Condition
-            /// 
-
-
 
 
         }
@@ -144,7 +144,7 @@ namespace JRRagonGames.JRRagonChess {
 
         public bool IsInCheck() {
             Board flipTurnBoard = CurrentBoardState.Copy();
-            flipTurnBoard.ActiveTeam = flipTurnBoard.OtherTeam;
+            flipTurnBoard.ActiveChessTeam = flipTurnBoard.OtherChessTeam;
             MoveGenerator endGameSimulator = new MoveGenerator(new ChessGame(flipTurnBoard));
             return endGameSimulator.IsInCheck();
         }

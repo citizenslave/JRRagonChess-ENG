@@ -93,7 +93,7 @@ namespace JRRagonGames.JRRagonChess {
 
         private void UpdateGameState() {
             MoveGenerator endGameSimulator = new MoveGenerator(this);
-            if (endGameSimulator.GenerateAllMoves().Count == 0) EndGame();
+            if (endGameSimulator.GenerateAllMoves().Count == 0) EndGame(IsInCheck());
 
 
 
@@ -138,9 +138,8 @@ namespace JRRagonGames.JRRagonChess {
 
         }
 
-        private void EndGame() {
-            if (IsInCheck()) CurrentGameState = GameState.Checkmate;
-            else CurrentGameState = GameState.Stalemate;
+        private void EndGame(bool isCheckMate) {
+            CurrentGameState = isCheckMate ? GameState.Checkmate : GameState.Stalemate;
         }
 
         public bool IsInCheck() {

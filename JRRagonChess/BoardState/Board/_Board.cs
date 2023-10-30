@@ -65,8 +65,6 @@ namespace JRRagonGames.JRRagonChess.BoardState {
             get => pieceData[squareIndex];
             set => pieceData[squareIndex] = value;
         }
-        public int[] PieceDataBySquare { get => (int[])pieceData.Clone(); }
-
         private readonly int[] pieceData;
 
         #region King Finder

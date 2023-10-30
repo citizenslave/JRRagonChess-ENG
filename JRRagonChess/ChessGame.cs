@@ -120,8 +120,8 @@ namespace JRRagonGames.JRRagonChess {
                 /// TODO: Implement more of this.  Two kings is the obvious material draw, but the minor piece cases
                 /// need to be handled as well and this is not doing that.
                 int pieceCounter = 0;
-                foreach (int nibble in CurrentBoardState.PieceDataBySquare) {
-                    if (nibble != 0) pieceCounter++;
+                for (int tileIndex = 0; tileIndex < TileCount; tileIndex++) {
+                    if (CurrentBoardState[tileIndex] != PieceNone) pieceCounter++;
                 }
                 if (pieceCounter == 2) CurrentGameState = GameState.Material;
 

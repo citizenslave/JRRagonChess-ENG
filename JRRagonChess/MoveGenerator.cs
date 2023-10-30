@@ -15,8 +15,8 @@ namespace JRRagonGames.JRRagonChess {
         public List<ChessMove> GenerateAllMoves(bool legal = true) {
             List<ChessMove> allMoves = new List<ChessMove>();
 
-            int[] tiles = currentGame.CurrentBoardState.PieceDataBySquare;
-            for (int tileIndex = 0; tileIndex < tiles.Length; tileIndex++) {
+            for (int tileIndex = 0; tileIndex < BoardConstants.TileCount; tileIndex++) {
+                int pieceNibble = currentGame[tileIndex];
 
                 int pieceNibble = tiles[tileIndex];
                 bool hasPiece = pieceNibble != PieceNone;

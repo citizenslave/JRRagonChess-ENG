@@ -1,15 +1,16 @@
+using JRRagonGames.JRRagonChess.Types;
+
 namespace JRRagonGames.JRRagonChess.ChessUtils {
     public static partial class FenUtility {
         private static class BoardSerializer {
             public static byte[] SerializeBoard(BoardState.Board board) {
-                int[] pieces = board.PieceDataBySquare;
                 int gameData = board.GameData;
 
-                byte[] serializedBoard = new byte[pieces.Length / 2 + (sizeof(int) - 1)];
+                byte[] serializedBoard = new byte[BoardConstants.TileCount / 2 + (sizeof(int) - 1)];
                 int byteIndex = 0, nibbleSize = 4, byteOffset = nibbleSize, pieceIndex = 0;
 
-                while (pieceIndex < pieces.Length) {
-                    serializedBoard[byteIndex] |= (byte)(pieces[pieceIndex++] << byteOffset);
+                while (pieceIndex < BoardConstants.TileCount) {
+                    serializedBoard[byteIndex] |= (byte)(board[pieceIndex++] << byteOffset);
 
                     byteOffset ^= nibbleSize;
                     if (byteOffset == nibbleSize) byteIndex++;

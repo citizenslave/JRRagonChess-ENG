@@ -31,9 +31,11 @@ namespace JRRagonGames.JRRagonChess {
                     allMoves.AddRange(
                         currentGame.GetPseudoLegalMovesFrom(
                             Position.GetPositionFromIndex(tileIndex)
-                        ).FindAll(move => !legal || IsLegalMove(move))
+                        )
                     );
             }
+
+            if (legal) allMoves = allMoves.FindAll(IsLegalMove);
 
             return allMoves;
         }

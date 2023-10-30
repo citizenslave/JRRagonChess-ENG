@@ -1,19 +1,17 @@
 using JRRagonGames.JRRagonChess.Types;
-
+using JRRagonGames.Utilities;
 using static JRRagonGames.Utilities.BitUtilities;
 
 namespace JRRagonGames.JRRagonChess.BoardState {
     public partial class Board {
-        private const int EnPassantOffset = 0x10;
         private const int EnPassantMask = 0x000f0000; // 4 << 16
-        private const int NoEnPassant = 0x00000000;
-        private const int EnPassantActive = 0x00080000;
+        private const int EnPassantActive = 0x8;
 
 
 
         public int EnPassant {
-            get => GameData & EnPassantMask;
-            set => GameData = SetBits(GameData, value, EnPassantMask);
+            get => gameDataRegister[EnPassantMask];
+            set => gameDataRegister[EnPassantMask] = value;
         }
 
         public bool HasEnPassant {
@@ -22,41 +20,23 @@ namespace JRRagonGames.JRRagonChess.BoardState {
 
         public int EnPassantIndex {
             get => Position.GetPositionFromName(EnPassantName).Index;
-            set => GameData = SetBits(
-                GameData,
-                PadBits(Position.GetFileFromIndex(value), EnPassantOffset) | EnPassantActive,
-                EnPassantMask
-            );
+            set => gameDataRegister[EnPassantMask] = Position.GetFileFromIndex(value) | EnPassantActive;
         }
 
         public string EnPassantName {
-            get => LookupEnPassant(GameData);
-            set => GameData = SetBits(
-                GameData,
-                GetEnPassant(value),
-                EnPassantMask
-            );
+            get => "abcdefgh"[gameDataRegister[EnPassantMask] & ~EnPassantActive] +
+                $"{(OtherChessTeam == ChessTeam.WhiteTeam ? '3' : '6')}";
+            set => gameDataRegister[EnPassantMask] = value[0] switch {
+                'a' => 0x8,
+                'b' => 0x9,
+                'c' => 0xa,
+                'd' => 0xb,
+                'e' => 0xc,
+                'f' => 0xd,
+                'g' => 0xe,
+                'h' => 0xf,
+                _ => 0,
+            };
         }
-
-
-
-        private static string LookupEnPassant(int gameData) =>
-            "abcdefgh"[GetBits(
-                gameData,
-                EnPassantOffset,
-                EnPassantMask & ~EnPassantActive)] +
-            $"{((gameData & BlackTurn) != 0 ? '3' : '6')}";
-
-        private static int GetEnPassant(string fileName) => fileName[0] switch {
-            'a' => 0x00080000,
-            'b' => 0x00090000,
-            'c' => 0x000a0000,
-            'd' => 0x000b0000,
-            'e' => 0x000c0000,
-            'f' => 0x000d0000,
-            'g' => 0x000e0000,
-            'h' => 0x000f0000,
-            _ => NoEnPassant,
-        };
     }
 }

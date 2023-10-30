@@ -1,4 +1,4 @@
-using JRRagonGames.JRRagonChess.BoardState;
+using JRRagonGames.JRRagonChess.Types;
 
 namespace JRRagonGames.JRRagonChess.Types {
     public readonly struct Position {
@@ -29,8 +29,8 @@ namespace JRRagonGames.JRRagonChess.Types {
 
         #region Component Extraction
         #region Components from Index
-        public static int GetFileFromIndex(int index) => index % Board.Constants.FileCount;
-        public static int GetRankFromIndex(int index) => index / Board.Constants.FileCount;
+        public static int GetFileFromIndex(int index) => index % BoardConstants.FileCount;
+        public static int GetRankFromIndex(int index) => index / BoardConstants.FileCount;
         #endregion
 
 
@@ -46,7 +46,7 @@ namespace JRRagonGames.JRRagonChess.Types {
         #region Conversion Utilities
         #region Index Conversion
         public static int GetIndex(string squareName) => GetPositionFromName(squareName).Index;
-        public static int GetIndex(int rank, int file) => rank * Board.Constants.FileCount + file;
+        public static int GetIndex(int rank, int file) => rank * BoardConstants.FileCount + file;
         #endregion
 
 

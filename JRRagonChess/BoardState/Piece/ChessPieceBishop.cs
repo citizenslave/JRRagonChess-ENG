@@ -10,8 +10,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
         protected override List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) {
             List<ChessMove> moves = new List<ChessMove>();
 
-            for (int moveOffsetIndex = 0; moveOffsetIndex < 4; moveOffsetIndex++) {
-                int moveOffset = moveOffsets[moveOffsetIndex];
+            foreach (int moveOffset in moveOffsets[0..4]) {
                 for (int searchIndex = PiecePosition.Index; IsValidSquare(searchIndex, moveOffset); searchIndex += moveOffset) {
                     int targetIndex = searchIndex + moveOffset;
                     Position targetPosition = Position.GetPositionFromIndex(targetIndex);

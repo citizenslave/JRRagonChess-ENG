@@ -10,6 +10,16 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
+        public ChessPieceBase(int type, int team, Position position) {
+            pieceTypeNibble = type;
+            pieceTeamNibble = team;
+            teamIndex = pieceTeamNibble >> TeamIndexOffset;
+            chessTeam = (ChessTeam)teamIndex;
+            piecePosition = position;
+        }
+
+
+
         protected int pieceTypeNibble;
         protected int pieceTeamNibble;
         protected int teamIndex;
@@ -18,12 +28,20 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
-        public ChessPieceBase(int type, int team, Position position) {
-            pieceTypeNibble = type;
-            pieceTeamNibble = team;
-            teamIndex = pieceTeamNibble >> TeamIndexOffset;
-            chessTeam = (ChessTeam)teamIndex;
-            piecePosition = position;
+        private static ChessPieceBase PieceFactory(Position startPosition, Board currentBoardState) {
+            int pieceToMove = currentBoardState[startPosition.Index];
+            int pieceTeam = GetPieceTeamRaw(pieceToMove);
+            int pieceType = GetPieceType(pieceToMove);
+
+            return pieceType switch {
+                ChessPiecePawnId => new ChessPiecePawn(pieceTeam, startPosition),
+                ChessPieceKnightId => new ChessPieceKnight(pieceTeam, startPosition),
+                ChessPieceKingId => new ChessPieceKing(pieceTeam, startPosition),
+                ChessPieceRookId => new ChessPieceRook(pieceTeam, startPosition),
+                ChessPieceBishopId => new ChessPieceBishop(pieceTeam, startPosition),
+                ChessPieceQueenId => new ChessPieceQueen(pieceTeam, startPosition),
+                _ => new ChessPieceBase(pieceType, pieceTeam, startPosition),
+            };
         }
 
 
@@ -35,6 +53,8 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
         public static List<ChessMove> GetPseudoLegalMovesFromPosition(Position startPosition, Board currentBoardState) =>
             PieceFactory(startPosition, currentBoardState).GetPseudoLegalMovesForPiece(currentBoardState);
         protected virtual List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) => new List<ChessMove>();
+
+
 
         protected List<ChessMove> GetFixedOffsetMoves(
             Board currentBoardState,
@@ -92,6 +112,10 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
+        public static bool IsValidMove(ChessMove move, Board currentBoardState) =>
+            currentBoardState[move.StartPosition.Index] != ChessPieceNone &&
+            PieceFactory(move.StartPosition, currentBoardState).IsMoveValid(move, currentBoardState);
+
         protected virtual bool IsMoveValid(ChessMove move, Board currentBoardState) {
             if (pieceTypeNibble == ChessPieceNone) return false;
             
@@ -104,55 +128,20 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
             return true;
         }
-
         protected static Predicate<int> SlidingOffsetSelector(ChessMove move) =>
             offset => (move.EndPosition.Index - move.StartPosition.Index) % offset == 0;
 
 
 
-        public static bool IsMovePossible(ChessMove move, Board currentBoardState) =>
-            currentBoardState[move.StartPosition.Index] != ChessPieceNone &&
-            PieceFactory(move.StartPosition, currentBoardState).IsMoveValid(move, currentBoardState);
-
-
-
-        private static ChessPieceBase PieceFactory(Position startPosition, Board currentBoardState) {
-            int pieceToMove = currentBoardState[startPosition.Index];
-            int pieceTeam = GetPieceTeamRaw(pieceToMove);
-            int pieceType = GetPieceType(pieceToMove);
-            
-            return pieceType switch {
-                ChessPiecePawnId => new ChessPiecePawn(pieceTeam, startPosition),
-                ChessPieceKnightId => new ChessPieceKnight(pieceTeam, startPosition),
-                ChessPieceKingId => new ChessPieceKing(pieceTeam, startPosition),
-                ChessPieceRookId => new ChessPieceRook(pieceTeam, startPosition),
-                ChessPieceBishopId => new ChessPieceBishop(pieceTeam, startPosition),
-                ChessPieceQueenId => new ChessPieceQueen(pieceTeam, startPosition),
-                _ => new ChessPieceBase(pieceType, pieceTeam, startPosition),
-            };
-        }
-
-
+        public static char GetFenCode(int piece) => FenIndex[piece];
 
         public static int GetPieceNibble(char pieceFenCode) => FenIndex.IndexOf(pieceFenCode);
-
         public static int GetPieceNibble(ChessTeam team, int pieceType) => pieceType | ((int)team << TeamIndexOffset);
 
 
 
-        public static char GetFenCode(int piece) => FenIndex[piece];
-
-
-
-
-
-
-
         public static int GetPieceTeamRaw(int piece) => piece & ChessPieceTeamMask;
-
         public static ChessTeam GetTeamFromNibble(int nibble) => (ChessTeam)(GetPieceTeamRaw(nibble) >> TeamIndexOffset);
-
-
 
         public static int GetPieceType(int piece) => piece & ChessPieceTypeMask;
     }

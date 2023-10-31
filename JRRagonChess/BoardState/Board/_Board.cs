@@ -86,7 +86,7 @@ namespace JRRagonGames.JRRagonChess.BoardState {
         public List<ChessMove> GetPseudoLegalMovesFrom(Position startPosition) =>
             ChessPieceBase.GetPseudoLegalMovesFromPosition(startPosition, this);
 
-        public bool IsMoveValid(ChessMove move) => ChessPieceBase.IsMovePossible(move, this);
+        public bool IsMoveValid(ChessMove move) => ChessPieceBase.IsValidMove(move, this);
         #endregion
         #endregion
 

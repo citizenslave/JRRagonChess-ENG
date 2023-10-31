@@ -1,5 +1,3 @@
-using JRRagonGames.JRRagonChess.Types;
-
 namespace JRRagonGames.JRRagonChess.Types {
     public readonly struct Position {
         #region Data/Constructor

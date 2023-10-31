@@ -105,6 +105,9 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
             return true;
         }
 
+        protected static Predicate<int> SlidingOffsetSelector(ChessMove move) =>
+            offset => (move.EndPosition.Index - move.StartPosition.Index) % offset == 0;
+
 
 
         public static bool IsMovePossible(ChessMove move, Board currentBoardState) =>

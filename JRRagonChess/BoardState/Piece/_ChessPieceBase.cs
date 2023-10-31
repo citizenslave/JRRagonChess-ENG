@@ -28,10 +28,9 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
         protected readonly int[] moveOffsets = new int[] { -9, -7, 7, 9, -8, -1, 1, 8 };
 
-        protected virtual List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) => new List<ChessMove>();
-
         public static List<ChessMove> GetPseudoLegalMovesFromPosition(Position startPosition, Board currentBoardState) =>
             PieceFactory(startPosition, currentBoardState).GetPseudoLegalMovesForPiece(currentBoardState);
+        protected virtual List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) => new List<ChessMove>();
 
 
 

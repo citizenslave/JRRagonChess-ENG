@@ -30,6 +30,15 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
         protected readonly int[] moveOffsets = new int[] { -9, -7, 7, 9, -8, -1, 1, 8 };
 
+
+
+        protected List<ChessMove> GetFixedOffsetMoves(
+            Board currentBoardState,
+            int[] offsets,
+            int directionMultiplier = 1
+        ) => new List<int>(offsets).FindAll(o => IsValidSquare(currentBoardState, this, o * directionMultiplier))
+                .ConvertAll(o => new ChessMove(piecePosition, piecePosition.OffsetByIndex(o * directionMultiplier)));
+
         public static List<ChessMove> GetPseudoLegalMovesFromPosition(Position startPosition, Board currentBoardState) =>
             PieceFactory(startPosition, currentBoardState).GetPseudoLegalMovesForPiece(currentBoardState);
         protected virtual List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) => new List<ChessMove>();

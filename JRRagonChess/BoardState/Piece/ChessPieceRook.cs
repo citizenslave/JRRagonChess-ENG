@@ -6,7 +6,7 @@ using JRRagonGames.JRRagonChess.Types;
 namespace JRRagonGames.JRRagonChess.BoardState.Piece {
     internal class ChessPieceRook : ChessPieceBase {
         public ChessPieceRook(int team, Position position)
-            : base(ChessPieceQueenId, team, position) { }
+            : base(ChessPieceRookId, team, position) { }
 
         protected override List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) {
             List<ChessMove> moves = new List<ChessMove>();
@@ -16,6 +16,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
                     int targetIndex = searchIndex + moveOffset;
                     Position targetPosition = Position.GetPositionFromIndex(targetIndex);
                     int pieceNibbleAtTarget = currentBoardState[searchIndex + moveOffset];
+
                     if (pieceNibbleAtTarget == ChessPieceNone || GetPieceTeamRaw(pieceNibbleAtTarget) != PieceTeam)
                         moves.Add(new ChessMove(PiecePosition, targetPosition));
                     if (pieceNibbleAtTarget != ChessPieceNone) break;

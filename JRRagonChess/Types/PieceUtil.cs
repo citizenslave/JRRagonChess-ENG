@@ -1,6 +1,8 @@
 ﻿using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase;
 using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
 
+
+
 namespace JRRagonGames.JRRagonChess.Types {
     public static class PieceUtil {
         public const int PieceNone = ChessPieceNone;
@@ -11,7 +13,7 @@ namespace JRRagonGames.JRRagonChess.Types {
         public const int PieceWhite = ChessPieceWhite;
         public const int PieceBlack = ChessPieceBlack;
 
-        public const int TeamPieceOffset = Constants.TeamPieceOffset;
+
 
         public static ChessTeam ExtractTeamFromNibble(int nibble) => GetTeamFromNibble(nibble);
         public static int ExtractPieceFromNibble(int nibble) => GetPieceType(nibble);

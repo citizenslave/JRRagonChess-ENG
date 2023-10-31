@@ -7,14 +7,9 @@ using static JRRagonGames.JRRagonChess.Types.PieceUtil;
 
 
 
-
-
 namespace JRRagonGames.JRRagonChess.ChessUtils {
     public static partial class FenUtility {
         private static class FenParser {
-            private static class FenIndex {
-            }
-
             public static Board ParseFen(string fen) {
                 const byte pieceIndex = 0;
                 const byte activeTeamIndex = 1;
@@ -23,23 +18,17 @@ namespace JRRagonGames.JRRagonChess.ChessUtils {
                 const byte halfTurnIndex = 4;
                 const byte turnCountIndex = 5;
 
-
-
                 string[] fenParts = fen.Split(' ');
 
 
 
                 int[] piecesOnSquares = GetPiecesOnSquares(fenParts[pieceIndex]);
 
-
-
                 ChessTeam activeTeamData = GetActiveTeam(fenParts[activeTeamIndex]);
                 CastleRights castleRightsData = GetCastleRights(fenParts[castleRightsIndex]);
                 string enPassantData = GetEnPassantFile(fenParts[enPassantIndex]);
                 int halfTurnData = GetHalfTurns(fenParts[halfTurnIndex]);
                 int turnCountData = GetTurnCount(fenParts[turnCountIndex]);
-
-
 
                 Board data = new Board(
                     piecesOnSquares,
@@ -55,6 +44,8 @@ namespace JRRagonGames.JRRagonChess.ChessUtils {
                 return data;
             }
 
+
+
             private static int[] GetPiecesOnSquares(string piecePositionData) {
                 int[] piecesOnSquares = new int[TileCount];
 
@@ -68,8 +59,12 @@ namespace JRRagonGames.JRRagonChess.ChessUtils {
                     piecesOnSquares[Position.GetIndex(rankIndex, fileIndex++)] = GetNibbleFromFen(piece);
                 }
 
+
+
                 return piecesOnSquares;
             }
+
+
 
             private static ChessTeam GetActiveTeam(string activeTeamFenData) =>
                 (activeTeamFenData == "w" ? ChessTeam.WhiteTeam : ChessTeam.BlackTeam);

@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
 
-using JRRagonGames.JRRagonChess.BoardState.Piece;
-using JRRagonGames.JRRagonChess.Types;
 using JRRagonGames.Utilities;
+
+using JRRagonGames.JRRagonChess.Types;
+using JRRagonGames.JRRagonChess.BoardState.Piece;
+
 using static JRRagonGames.JRRagonChess.Types.PieceUtil;
 
 namespace JRRagonGames.JRRagonChess.BoardState {
     public partial class Board {
-        public static class Constants {
-            public const int TileCount = 64;
-            public const int FileCount = 8;
-        }
+
+
 
         #region GameData
         /** GameData Registers:
@@ -30,20 +30,24 @@ namespace JRRagonGames.JRRagonChess.BoardState {
          * ht   :half turn counter
          * turn :turn counter
          */
-        public int GameData { get => gameDataRegister.BitData; private set => gameDataRegister.BitData = value; }
 
+        public int GameData { get => gameDataRegister.BitData; private set => gameDataRegister.BitData = value; }
         private readonly BitRegister gameDataRegister = new BitRegister(0);
         #endregion
 
+
+
         #region Constructors & Factories
         public Board(int[] _pieceData, int _GameData) { pieceData = _pieceData; gameDataRegister.BitData = _GameData; }
+
+        public Board Copy() => new Board((int[])pieceData.Clone(), gameDataRegister.BitData);
 
         public Board(
             int[] _pieceData,
             ChessTeam _activeTeam,
             CastleRights _castleRights,
             string _enPassantFileName,
-            int _halfTurn,
+            int _halfCount,
             int _turnCount
         ) {
             pieceData = (int[])_pieceData.Clone();
@@ -51,11 +55,9 @@ namespace JRRagonGames.JRRagonChess.BoardState {
             AllCastleRights = _castleRights;
             ActiveChessTeam = _activeTeam;
             if (!string.IsNullOrEmpty(_enPassantFileName)) EnPassantName = _enPassantFileName;
-            HalfCount = _halfTurn;
+            HalfCount = _halfCount;
             TurnCount = _turnCount;
         }
-
-        public Board Copy() => new Board((int[])pieceData.Clone(), gameDataRegister.BitData);
         #endregion
 
 
@@ -65,8 +67,6 @@ namespace JRRagonGames.JRRagonChess.BoardState {
             get => pieceData[squareIndex];
             set => pieceData[squareIndex] = value;
         }
-        public int[] PieceDataBySquare { get => (int[])pieceData.Clone(); }
-
         private readonly int[] pieceData;
 
         #region King Finder
@@ -79,6 +79,8 @@ namespace JRRagonGames.JRRagonChess.BoardState {
             )
         );
         #endregion
+
+
 
         #region Move Generation and Validation
         public List<ChessMove> GetPseudoLegalMovesFrom(Position startPosition) =>
@@ -96,10 +98,14 @@ namespace JRRagonGames.JRRagonChess.BoardState {
             string boardBottom = $" ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n  A B C D E F G H\n   {BitConverter.ToString(_gameData)}",
                 boardView = $"  A B C D E F G H\n _________________\n{Constants.FileCount}";
 
+
+
             int rankIndex = Constants.FileCount - 1, fileIndex = 0;
             while (rankIndex >= 0) {
+
                 int squareIndex = Position.GetIndex(rankIndex, fileIndex++);
                 boardView += $"|{ChessPieceBase.GetFenCode(pieceData[squareIndex])}";
+
                 if (fileIndex % Constants.FileCount == 0 ) {
                     fileIndex = 0;
                     rankIndex--;

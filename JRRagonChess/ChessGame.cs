@@ -4,56 +4,70 @@ using System.Collections.Generic;
 using JRRagonGames.JRRagonChess.Types;
 using JRRagonGames.JRRagonChess.BoardState;
 
-using static JRRagonGames.JRRagonChess.ChessUtils.FenUtility;
-
+using static JRRagonGames.JRRagonChess.Types.PieceUtil;
 using static JRRagonGames.JRRagonChess.Types.Position;
 using static JRRagonGames.JRRagonChess.Types.BoardConstants;
 
-using static JRRagonGames.JRRagonChess.Types.PieceUtil;
+using static JRRagonGames.JRRagonChess.ChessUtils.FenUtility;
+
+
 
 namespace JRRagonGames.JRRagonChess {
     public class ChessGame {
-        public int this[int boardTileIndex] => CurrentBoardState[boardTileIndex];
+        #region Public Accessors
+        public int this[int boardTileIndex] => boardState[boardTileIndex];
+
+
+
         public GameState CurrentGameState { get; private set; }
-        public ChessTeam ActiveTeam => CurrentBoardState.ActiveChessTeam;
-        public ChessTeam OtherTeam => CurrentBoardState.OtherChessTeam;
-        public string FenCode => ExtractCurrentFen(CurrentBoardState);
-        public Board CurrentBoardState { get; private set; }
+
+
+
+        public ChessTeam ActiveTeam => boardState.ActiveChessTeam;
+        public ChessTeam OtherTeam => boardState.OtherChessTeam;
+
+
+
+        public string FenCode => ExtractCurrentFen(boardState);
+        #endregion
+
+
+
+        #region Constructors and Factories
+        public ChessGame() : this(ParseFen(startpos)) { }
+        public ChessGame(string fenCode) : this(ParseFen(fenCode)) { }
+        public ChessGame(Board boardState, bool isSimulated = false) {
+            this.boardState = boardState;
+            if (!isSimulated) UpdateGameState();
+        }
+
+        public ChessGame GetSimulation() => new ChessGame(boardState.Copy(), true);
+        private readonly Board boardState;
+        #endregion
+
+
 
         #region Move List
         public IReadOnlyList<ChessMove> MoveList => moveList.AsReadOnly();
         private readonly List<ChessMove> moveList = new List<ChessMove>();
+        #endregion
 
+
+
+        #region MoveGenerator Interface
         public List<ChessMove> GetAllLegalMoves() => new MoveGenerator(this).GenerateAllMoves();
         public List<ChessMove> GetLegalMovesFrom(Position position) => new List<ChessMove>();
-        public List<ChessMove> GetPseudoLegalMovesFrom(Position position) => CurrentBoardState.GetPseudoLegalMovesFrom(position);
+        public List<ChessMove> GetPseudoLegalMovesFrom(Position position) => boardState.GetPseudoLegalMovesFrom(position);
         #endregion
 
-        #region Constructors
-        public ChessGame() : this(ParseFen(startpos)) { }
-
-        public ChessGame(string fenCode) : this(ParseFen(fenCode)) { }
-
-        public ChessGame(Board boardState, bool isSimulated = false) {
-            SetBoardState(CurrentBoardState = boardState);
-            if (!isSimulated) UpdateGameState();
-        }
-        #endregion
-
-        public void SetBoardState(Board state) {
-            moveList.Clear();
-            CurrentBoardState = state;
-        }
 
 
-
+        #region Public Interface
         public int CapturedPieceIndex(ChessMove move) => move.Flag switch {
 
 
 
 
-            /// TODO: Move this into the Board to remove the direct reference to the ActiveTeamUtil function.
-            /// 
 
             ChessMove.MoveFlag.EnPassant => move.EndPosition.Index - (Board.TeamDirectionMultiplier(OtherTeam) * FileCount),
 
@@ -66,92 +80,59 @@ namespace JRRagonGames.JRRagonChess {
 
 
         public void ExecuteMove(ChessMove move, bool simulated = false) {
+            if (!boardState.IsMoveValid(move)) return;
+            
+
+
             int fromIndex = move.StartPosition.Index;
             int toIndex = move.EndPosition.Index;
-            
-            if (!CurrentBoardState.IsMoveValid(move)) return;
-            
-            int pieceToMove = CurrentBoardState[fromIndex];
+            int pieceToMove = boardState[fromIndex];
             int flag = DetectMoveFlags(move);
 
-            if (IsHalfTurnReset(pieceToMove, CurrentBoardState[toIndex])) CurrentBoardState.HalfCount = 0;
-            else CurrentBoardState.HalfCount++;
 
-            CurrentBoardState[fromIndex] = 0;
-            CurrentBoardState[toIndex] = pieceToMove;
+
+            bool isHalfTurnReset = false ||
+                boardState[toIndex] > PieceNone ||
+                ExtractPieceFromNibble(pieceToMove) == PiecePawn ||
+            false;
+            if (isHalfTurnReset) boardState.HalfCount = 0;
+            else boardState.HalfCount++;
+
+
+
+            boardState[fromIndex] = 0;
+            boardState[toIndex] = pieceToMove;
             moveList.Add(move);
 
-            CurrentBoardState.EnPassant = 0;
+
+
+            boardState.EnPassant = 0;
             UpdateCastleRights(fromIndex, toIndex);
             ProcessMoveFlags(toIndex, flag);
 
-            if (CurrentBoardState.ActiveChessTeam == ChessTeam.BlackTeam) CurrentBoardState.TurnCount++;
-            CurrentBoardState.ActiveChessTeam = CurrentBoardState.OtherChessTeam;
 
+
+            if (boardState.ActiveChessTeam == ChessTeam.BlackTeam) boardState.TurnCount++;            
+            boardState.ActiveChessTeam = boardState.OtherChessTeam;
             if (!simulated) UpdateGameState();
         }
 
-        private void UpdateGameState() {
-            MoveGenerator endGameSimulator = new MoveGenerator(this);
-            if (endGameSimulator.GenerateAllMoves().Count == 0) EndGame(IsInCheck());
 
 
-
-
-
-
-            /// TODO: Implement this properly.  The flag will immediately end the game and the straight counter
-            /// overflows at 127, 23 plys before the progress draw is arbitrated.  The HT counter needs at least
-            /// one more bit (which could be used to represent the flag in the game data)
-            else if (CurrentBoardState.HalfCount > 100) CurrentGameState = GameState.Progress;
-            //else if (CurrentBoardState.HalfTurn < 100 && CurrentGameState == GameState.Progress) CurrentGameState = GameState.Running;
-
-
-
-
-
-
-
-
-
-
-            else {
-
-                /// TODO: Implement more of this.  Two kings is the obvious material draw, but the minor piece cases
-                /// need to be handled as well and this is not doing that.
-                int pieceCounter = 0;
-                foreach (int nibble in CurrentBoardState.PieceDataBySquare) {
-                    if (nibble != 0) pieceCounter++;
-                }
-                if (pieceCounter == 2) CurrentGameState = GameState.Material;
-
-
-
-
-
-
-                /// TODO: 3-5 Fold Repetition Draw Condition
-                /// 
-
-            }
-
-
+        public bool IsInCheck(bool flip = true) {
+            Board flipTurnBoard = boardState.Copy();
+            if (flip) flipTurnBoard.ActiveChessTeam = flipTurnBoard.OtherChessTeam;
+            MoveGenerator endGameSimulator = new MoveGenerator(new ChessGame(flipTurnBoard, true));
+            return endGameSimulator.IsPositionThreatened(flipTurnBoard.OtherKingPosition);
         }
+        #endregion
 
-        private void EndGame(bool isCheckMate) {
-            CurrentGameState = isCheckMate ? GameState.Checkmate : GameState.Stalemate;
-        }
 
-        public bool IsInCheck() {
-            Board flipTurnBoard = CurrentBoardState.Copy();
-            flipTurnBoard.ActiveChessTeam = flipTurnBoard.OtherChessTeam;
-            MoveGenerator endGameSimulator = new MoveGenerator(new ChessGame(flipTurnBoard));
-            return endGameSimulator.IsInCheck();
-        }
 
+        #region Move Flags
         #region MoveFlag Detection
         private int DetectMoveFlags(ChessMove move) {
-            int pieceToMoveType = ExtractPieceFromNibble(CurrentBoardState[move.StartPosition.Index]);
+            int pieceToMoveType = ExtractPieceFromNibble(boardState[move.StartPosition.Index]);
 
             if (pieceToMoveType == PiecePawn) return DetectPawnFlags(move);
             if (pieceToMoveType == PieceKing) return DetectCastleFlag(move);
@@ -165,7 +146,7 @@ namespace JRRagonGames.JRRagonChess {
 
             bool isPawnCapture = move.StartPosition.file != move.EndPosition.file;
             if (isPawnCapture) {
-                bool isPawnCaptureToEnPassant = CurrentBoardState.EnPassantIndex == move.EndPosition.Index;
+                bool isPawnCaptureToEnPassant = boardState.EnPassantIndex == move.EndPosition.Index;
                 if (isPawnCaptureToEnPassant) return ChessMove.MoveFlag.EnPassant;
             }
 
@@ -175,56 +156,27 @@ namespace JRRagonGames.JRRagonChess {
         private int DetectCastleFlag(ChessMove move) {
             if (Math.Abs(move.StartPosition.file - move.EndPosition.file) < 2) return move.Flag;
 
-            // TODO: Unnecessary?  Rule checks are presumed to have already happened to allow a king to jump two files.
-            int pieceToMove = CurrentBoardState[move.StartPosition.Index];
+
+
+            /// TODO: #21 Free Placement Mode will have to worry about this.
+            /// 
+            /// If this is a generated move, then these conditions will always be met and trigger
+            /// castling.  The ChessGame itself, however, will allow moves that have not been
+            /// generated to be submitted and this code under those game conditions will set the
+            /// move flag and cause unpredictable behavior (removing pieces, spawning rooks) if
+            /// the change in file condition above is met.
+            /// 
+            int pieceToMove = boardState[move.StartPosition.Index];
             ChessTeam pieceToMoveTeam = ExtractTeamFromNibble(pieceToMove);
             bool isQueenside = move.StartPosition.file > move.EndPosition.file;
 
-            if (CurrentBoardState.GetCastleRights(pieceToMoveTeam, isQueenside)) return ChessMove.MoveFlag.Castle;
+
+
+            if (boardState.GetCastleRights(pieceToMoveTeam, isQueenside)) return ChessMove.MoveFlag.Castle;
+
+
 
             return move.Flag;
-        }
-        #endregion
-
-        #region Game State Updates
-        private static bool IsHalfTurnReset(int pieceToMove, int pieceToCapture) =>
-            pieceToCapture > 0 || ExtractPieceFromNibble(pieceToMove) == PiecePawn;
-
-        private void UpdateCastleRights(int fromIndex, int toIndex) {
-            int fromRank = GetRankFromIndex(fromIndex),
-                toRank = GetRankFromIndex(toIndex),
-
-                fileIndex = FileCount - 1,
-
-                teamMultiplier = CurrentBoardState.TeamRankMultiplier,
-                otherMultiplier = CurrentBoardState.TeamRankMultiplier ^ 1,
-
-                teamHomeRank = teamMultiplier * fileIndex,
-                otherHomeRank = otherMultiplier * fileIndex;
-
-            bool isTeamHomeRank = fromRank == teamHomeRank,
-                isOtherHomeRank = toRank == otherHomeRank;
-
-            if (isTeamHomeRank || isOtherHomeRank) {
-                int fromFile = GetFileFromIndex(fromIndex),
-                    toFile = GetFileFromIndex(toIndex);
-
-                bool isTeamKing = isTeamHomeRank && fromFile == 4;
-
-                if (isTeamKing) CurrentBoardState.RevokeCastleRights(ActiveTeam);
-                else {
-                    bool isTeamQueenRook = isTeamHomeRank && fromFile == 0,
-                        isTeamKingRook = isTeamHomeRank && fromFile == 7,
-
-                        isOtherQueenRook = isOtherHomeRank && toFile == 0,
-                        isOtherKingRook = isOtherHomeRank && toFile == 7;
-
-                    if (isTeamKingRook) CurrentBoardState.RevokeCastleRights(ActiveTeam, false);
-                    if (isTeamQueenRook) CurrentBoardState.RevokeCastleRights(ActiveTeam, true);
-                    if (isOtherKingRook) CurrentBoardState.RevokeCastleRights(OtherTeam, false);
-                    if (isOtherQueenRook) CurrentBoardState.RevokeCastleRights(OtherTeam, true);
-                }
-            }
         }
         #endregion
 
@@ -235,10 +187,10 @@ namespace JRRagonGames.JRRagonChess {
 
             switch (flag) {
                 case ChessMove.MoveFlag.EnPassant:
-                    CurrentBoardState[enPassantIndex] = 0;
+                    boardState[enPassantIndex] = 0;
                     break;
                 case ChessMove.MoveFlag.DoublePush:
-                    CurrentBoardState.EnPassantIndex = enPassantIndex;
+                    boardState.EnPassantIndex = enPassantIndex;
                     break;
                 case ChessMove.MoveFlag.Castle:
                     ProcessCastling(toIndex);
@@ -247,7 +199,7 @@ namespace JRRagonGames.JRRagonChess {
                 case ChessMove.MoveFlag.BishopPromotion:
                 case ChessMove.MoveFlag.KnightPromotion:
                 case ChessMove.MoveFlag.RookPromotion:
-                    CurrentBoardState[toIndex] = GeneratePieceNibble(ActiveTeam, flag);
+                    boardState[toIndex] = GeneratePieceNibble(ActiveTeam, flag);
                     break;
                 default: break;
             }
@@ -258,6 +210,8 @@ namespace JRRagonGames.JRRagonChess {
                 kingsideFileOffset = 6,
                 queensideRookOffset = 0,
                 kingsideRookOffset = 7;
+
+
 
             int castleRankIndex = GetRankFromIndex(toIndex) * FileCount,
 
@@ -273,14 +227,109 @@ namespace JRRagonGames.JRRagonChess {
                         : (castleRankIndex + kingsideFileOffset - 1)
                 );
 
-            CurrentBoardState[rookIndex] = 0;
-            CurrentBoardState[rookTargetIndex] =
+
+
+            boardState[rookIndex] = 0;
+            boardState[rookTargetIndex] =
                 GeneratePieceNibble(ActiveTeam, PieceRook);
         }
         #endregion
+        #endregion
+
+
+
+        #region Game State Updates
+        private void UpdateCastleRights(int fromIndex, int toIndex) {
+            int fromRank = GetRankFromIndex(fromIndex),
+                toRank = GetRankFromIndex(toIndex),
+
+                homeRankIndex = FileCount - 1,
+
+                teamMultiplier = boardState.ActiveTeamIndex,
+                otherMultiplier = boardState.OtherTeamIndex,
+
+                teamHomeRank = teamMultiplier * homeRankIndex,
+                otherHomeRank = otherMultiplier * homeRankIndex;
+
+            bool isTeamHomeRank = fromRank == teamHomeRank,
+                isOtherHomeRank = toRank == otherHomeRank;
+
+            if (isTeamHomeRank || isOtherHomeRank) {
+                int fromFile = GetFileFromIndex(fromIndex),
+                    toFile = GetFileFromIndex(toIndex);
+
+                bool isTeamKing = isTeamHomeRank && fromFile == 4;
+
+                if (isTeamKing) boardState.RevokeCastleRights(ActiveTeam);
+                else {
+                    bool isTeamQueenRook = isTeamHomeRank && fromFile == 0,
+                        isTeamKingRook = isTeamHomeRank && fromFile == 7,
+
+                        isOtherQueenRook = isOtherHomeRank && toFile == 0,
+                        isOtherKingRook = isOtherHomeRank && toFile == 7;
+
+                    if (isTeamKingRook) boardState.RevokeCastleRights(ActiveTeam, false);
+                    if (isTeamQueenRook) boardState.RevokeCastleRights(ActiveTeam, true);
+                    if (isOtherKingRook) boardState.RevokeCastleRights(OtherTeam, false);
+                    if (isOtherQueenRook) boardState.RevokeCastleRights(OtherTeam, true);
+                }
+            }
+        }
+
+        private void UpdateGameState() {
+            MoveGenerator endGameSimulator = new MoveGenerator(this);
+            if (endGameSimulator.GenerateAllMoves().Count == 0)
+                CurrentGameState = IsInCheck() ? GameState.Checkmate : GameState.Stalemate;
+
+
+
+
+
+
+            /// TODO: Implement this properly.  The flag will immediately end the game and the straight counter
+            /// overflows at 127, 23 plys before the progress draw is arbitrated.  The HT counter needs at least
+            /// one more bit (which could be used to represent the flag in the game data)
+            else if (boardState.HalfCount > 100) CurrentGameState = GameState.Progress;
+            //else if (CurrentBoardState.HalfTurn < 100 && CurrentGameState == GameState.Progress) CurrentGameState = GameState.Running;
+
+
+
+
+
+
+
+
+
+
+            else {
+
+                /// TODO: Implement more of this.  Two kings is the obvious material draw, but the minor piece cases
+                /// need to be handled as well and this is not doing that.  Extract to Board?
+                int pieceCounter = 0;
+                for (int tileIndex = 0; tileIndex < TileCount; tileIndex++) {
+                    if (boardState[tileIndex] != PieceNone) pieceCounter++;
+                    /// TODO: Minor Piece counters.  Extract to Board?
+                }
+                if (pieceCounter == 2) CurrentGameState = GameState.Material;
+
+
+
+
+
+
+                /// TODO: 3-5 Fold Repetition Draw Condition
+                /// 
+
+            }
+
+
+        }
+        #endregion
+
+
 
         public override string ToString() =>
-            $"{CurrentGameState}:\n{CurrentBoardState}\n{ExtractCurrentFen(CurrentBoardState)} moves " +
+            $"{CurrentGameState}:\n{boardState}\n{ExtractCurrentFen(boardState)} moves " +
                 string.Join(' ', moveList.ConvertAll(m => m.ToString()));
     }
 }

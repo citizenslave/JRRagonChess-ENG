@@ -1,4 +1,4 @@
-﻿using JRRagonGames.JRRagonChess.BoardState;
+﻿using static JRRagonGames.JRRagonChess.BoardState.Board;
 
 namespace JRRagonGames.JRRagonChess.Types {
     public enum GameState {
@@ -17,7 +17,7 @@ namespace JRRagonGames.JRRagonChess.Types {
     }
 
     public static class BoardConstants {
-        public const int FileCount = Board.Constants.FileCount;
-        public const int TileCount = Board.Constants.TileCount;
+        public const int FileCount = Constants.FileCount;
+        public const int TileCount = Constants.TileCount;
     }
 }

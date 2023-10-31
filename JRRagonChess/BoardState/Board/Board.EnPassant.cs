@@ -1,10 +1,11 @@
 using JRRagonGames.JRRagonChess.Types;
-using JRRagonGames.Utilities;
-using static JRRagonGames.Utilities.BitUtilities;
 
 namespace JRRagonGames.JRRagonChess.BoardState {
     public partial class Board {
         private const int EnPassantMask = 0x000f0000; // 4 << 16
+
+
+
         private const int EnPassantActive = 0x8;
 
 
@@ -14,9 +15,11 @@ namespace JRRagonGames.JRRagonChess.BoardState {
             set => gameDataRegister[EnPassantMask] = value;
         }
 
-        public bool HasEnPassant {
-            get => EnPassant > 0;
-        }
+
+
+        public bool HasEnPassant => EnPassant > 0;
+
+
 
         public int EnPassantIndex {
             get => Position.GetPositionFromName(EnPassantName).Index;

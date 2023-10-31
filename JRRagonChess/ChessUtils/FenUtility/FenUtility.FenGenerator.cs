@@ -5,11 +5,13 @@ using JRRagonGames.JRRagonChess.Types;
 using static JRRagonGames.JRRagonChess.Types.PieceUtil;
 using static JRRagonGames.JRRagonChess.Types.BoardConstants;
 
+
+
 namespace JRRagonGames.JRRagonChess.ChessUtils {
     public static partial class FenUtility {
         private static class FenGenerator {
-            public static string GenerateFen(Board boardData) {
-                string fen = "" +
+            public static string GenerateFen(Board boardData) =>
+                "" +
                     $"{GetPiecePositions(boardData)} " +
                     $"{GetActiveTeam(boardData)} " +
                     $"{GetCastleRights(boardData)} " +
@@ -18,30 +20,21 @@ namespace JRRagonGames.JRRagonChess.ChessUtils {
                     $"{GetTurnCount(boardData)}" +
                 "";
 
-                return fen;
-            }
+
 
             private static string GetPiecePositions(Board boardData) {
                 string positions = "";
 
-
-
                 int rankIndex = FileCount - 1, fileIndex = 0, spaceCounter = 0;
                 while (rankIndex >= 0) {
 
-
-
                     int piece = boardData[Position.GetIndex(rankIndex, fileIndex++)];
-
-
 
                     if (piece == 0) spaceCounter++;
                     else {
                         if (spaceCounter > 0) { positions += spaceCounter; spaceCounter = 0; }
                         positions += GetFenCharFromNibble(piece);
                     }
-
-
 
                     if (fileIndex % FileCount == 0) {
                         rankIndex--;
@@ -52,6 +45,8 @@ namespace JRRagonGames.JRRagonChess.ChessUtils {
 
                 return positions[..^1];
             }
+
+
 
             private static string GetActiveTeam(Board boardData) =>
                 boardData.ActiveChessTeam != ChessTeam.BlackTeam ? "w" : "b";

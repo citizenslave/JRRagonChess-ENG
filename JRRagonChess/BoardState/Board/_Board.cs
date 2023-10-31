@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using JRRagonGames.JRRagonChess.BoardState.Piece;
 using JRRagonGames.JRRagonChess.Types;
 using JRRagonGames.Utilities;
+
 using static JRRagonGames.JRRagonChess.Types.PieceUtil;
 
 namespace JRRagonGames.JRRagonChess.BoardState {
@@ -12,6 +13,8 @@ namespace JRRagonGames.JRRagonChess.BoardState {
             public const int TileCount = 64;
             public const int FileCount = 8;
         }
+
+
 
         #region GameData
         /** GameData Registers:
@@ -30,10 +33,12 @@ namespace JRRagonGames.JRRagonChess.BoardState {
          * ht   :half turn counter
          * turn :turn counter
          */
-        public int GameData { get => gameDataRegister.BitData; private set => gameDataRegister.BitData = value; }
 
+        public int GameData { get => gameDataRegister.BitData; private set => gameDataRegister.BitData = value; }
         private readonly BitRegister gameDataRegister = new BitRegister(0);
         #endregion
+
+
 
         #region Constructors & Factories
         public Board(int[] _pieceData, int _GameData) { pieceData = _pieceData; gameDataRegister.BitData = _GameData; }
@@ -77,6 +82,8 @@ namespace JRRagonGames.JRRagonChess.BoardState {
             )
         );
         #endregion
+
+
 
         #region Move Generation and Validation
         public List<ChessMove> GetPseudoLegalMovesFrom(Position startPosition) =>

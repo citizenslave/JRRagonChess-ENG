@@ -16,10 +16,8 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
-        protected override bool IsMoveValid(ChessMove move, Board currentBoardState) {
-            if (!base.IsMoveValid(move, currentBoardState)) return false;
-
-            return true;
-        }
+        protected override bool IsMoveValid(ChessMove move, Board currentBoardState) =>
+            base.IsMoveValid(move, currentBoardState) &&
+            (new List<int>(moveOffsets).FindIndex(SlidingOffsetSelector(move)) != -1);
     }
 }

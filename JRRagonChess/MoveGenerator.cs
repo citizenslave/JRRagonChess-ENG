@@ -41,18 +41,15 @@ namespace JRRagonGames.JRRagonChess {
             ChessGame temporaryGame = currentGame.GetSimulation();
             temporaryGame.ExecuteMove(move, true);
 
-            return !(new MoveGenerator(temporaryGame)).IsInCheck();
+            return !temporaryGame.IsInCheck(false);
         }
         #endregion
 
 
 
         #region Simulation Interface
-        public bool IsInCheck() {
-            Position piecePosition = currentGame.CurrentBoardState.OtherKingPosition;
-
-            return GenerateAllMoves(false).FindIndex(move => move.EndPosition.Index == piecePosition.Index) != -1;
-        }
+        public bool IsPositionThreatened(Position piecePosition) =>
+            GenerateAllMoves(false).FindIndex(move => move.EndPosition.Index == piecePosition.Index) != -1;
         #endregion
     }
 }

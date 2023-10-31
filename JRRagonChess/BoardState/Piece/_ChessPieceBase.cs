@@ -36,6 +36,20 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
+        protected static bool IsValidSquare(Board currentBoardState, ChessPieceBase piece, int moveOffset, int max = 2) {
+            if (!IsValidSquare(piece.piecePosition.Index, moveOffset, max)) return false;
+
+            Position targetPosition = piece.piecePosition.OffsetByIndex(moveOffset);
+            int pieceNibbleAtTarget = currentBoardState[targetPosition.Index];
+
+            bool targetingPiece = pieceNibbleAtTarget != ChessPieceNone,
+                targetingOpponent = targetingPiece && GetTeamFromNibble(pieceNibbleAtTarget) != piece.chessTeam;
+            if (targetingPiece && !targetingOpponent) return false;
+
+            return true;
+
+        }
+
         protected static bool IsValidSquare(int initialIndex, int moveOffset, int max = 2) {
             int targetIndex = initialIndex + moveOffset;
             if (targetIndex < 0 || targetIndex >= Board.Constants.TileCount) return false;

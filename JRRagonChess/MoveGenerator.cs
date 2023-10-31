@@ -43,9 +43,9 @@ namespace JRRagonGames.JRRagonChess {
         }
 
         public bool IsInCheck() {
-            Position checkedKingPosition = currentGame.CurrentBoardState.OtherKingPosition;
+            Position piecePosition = currentGame.CurrentBoardState.OtherKingPosition;
 
-            return GenerateAllMoves(false).FindIndex(move => move.EndPosition.Index == checkedKingPosition.Index) != -1;
+            return GenerateAllMoves(false).FindIndex(move => move.EndPosition.Index == piecePosition.Index) != -1;
         }
     }
 }

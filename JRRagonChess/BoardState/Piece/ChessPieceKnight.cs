@@ -14,24 +14,8 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
         private new readonly int[] moveOffsets = new int[] { -17, -15, -10, -6, 6, 10, 15, 17 };
         /// Matching capture offsets, home ranks irrelevant
 
-        protected override List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) {
-            List<ChessMove> legalMoves = new List<ChessMove>();
-
-
-
-            foreach (int moveOffset in moveOffsets) {
-
-                if (!IsValidSquare(currentBoardState, this, moveOffset)) continue;
-
-
-
-                legalMoves.Add(new ChessMove(piecePosition, piecePosition.OffsetByIndex(moveOffset)));
-            }
-
-
-
-            return legalMoves;
-        }
+        protected override List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) =>
+            GetFixedOffsetMoves(currentBoardState, moveOffsets);
 
         protected override bool IsMoveValid(ChessMove move, Board currentBoardState) {
             if (!base.IsMoveValid(move, currentBoardState)) return false;

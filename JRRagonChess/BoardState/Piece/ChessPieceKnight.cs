@@ -21,17 +21,14 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
             foreach (int moveOffset in moveOffsets) {
 
-                if (!IsValidSquare(piecePosition.Index, moveOffset)) continue;
+                if (!IsValidSquare(currentBoardState, this, moveOffset)) continue;
 
-                Position targetPosition = piecePosition.OffsetByIndex(moveOffset);
-                int pieceNibbleAtTarget = currentBoardState[targetPosition.Index];
 
-                bool targetingPiece = pieceNibbleAtTarget != ChessPieceNone;
-                bool targetingOpponent = targetingPiece && GetTeamFromNibble(pieceNibbleAtTarget) != chessTeam;
-                if (targetingPiece && !targetingOpponent) continue;
 
-                legalMoves.Add(new ChessMove(piecePosition, targetPosition));
+                legalMoves.Add(new ChessMove(piecePosition, piecePosition.OffsetByIndex(moveOffset)));
             }
+
+
 
             return legalMoves;
         }

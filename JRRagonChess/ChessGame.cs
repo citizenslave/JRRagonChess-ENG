@@ -231,6 +231,15 @@ namespace JRRagonGames.JRRagonChess {
 
 
         #region Game State Updates
+        public bool IsInCheck() {
+            Board flipTurnBoard = CurrentBoardState.Copy();
+            flipTurnBoard.ActiveChessTeam = flipTurnBoard.OtherChessTeam;
+            MoveGenerator endGameSimulator = new MoveGenerator(new ChessGame(flipTurnBoard));
+            return endGameSimulator.IsInCheck();
+        }
+
+
+
         private void UpdateCastleRights(int fromIndex, int toIndex) {
             int fromRank = GetRankFromIndex(fromIndex),
                 toRank = GetRankFromIndex(toIndex),
@@ -315,13 +324,6 @@ namespace JRRagonGames.JRRagonChess {
             }
 
 
-        }
-
-        public bool IsInCheck() {
-            Board flipTurnBoard = CurrentBoardState.Copy();
-            flipTurnBoard.ActiveChessTeam = flipTurnBoard.OtherChessTeam;
-            MoveGenerator endGameSimulator = new MoveGenerator(new ChessGame(flipTurnBoard));
-            return endGameSimulator.IsInCheck();
         }
         #endregion
 

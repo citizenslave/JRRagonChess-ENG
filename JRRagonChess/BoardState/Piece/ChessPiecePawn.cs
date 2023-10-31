@@ -13,7 +13,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
         public ChessPiecePawn(int team, Position position)
             : base(ChessPiecePawnId, team, position) { }
 
-        private readonly int[] captureOffsets = new[] { 7, 9 },
+        private static readonly int[] captureOffsets = new[] { 7, 9 },
             pushOffsets = new[] { 8, 16 },
             homeRanks = new[] { 1, 6 },
             promotionRanks = new[] { 7, 0 },

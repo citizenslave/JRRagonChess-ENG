@@ -1,6 +1,4 @@
 using JRRagonGames.JRRagonChess.Types;
-using JRRagonGames.Utilities;
-using static JRRagonGames.Utilities.BitUtilities;
 
 namespace JRRagonGames.JRRagonChess.BoardState {
     public partial class Board {

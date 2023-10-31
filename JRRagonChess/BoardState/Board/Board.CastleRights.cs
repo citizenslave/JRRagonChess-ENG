@@ -1,6 +1,7 @@
 using JRRagonGames.JRRagonChess.Types;
 
 
+
 namespace JRRagonGames.JRRagonChess.BoardState {
     public partial class Board {
         private const int CastleMask = 0x00f00000; // 4 << 20
@@ -11,10 +12,6 @@ namespace JRRagonGames.JRRagonChess.BoardState {
         private const int WhiteQueenCastle = 0x00400000;
         private const int BlackKingsCastle = 0x00200000;
         private const int BlackQueenCastle = 0x00100000;
-
-
-
-        public bool HasCastleRights => gameDataRegister[CastleMask] > 0;
 
 
 
@@ -36,21 +33,20 @@ namespace JRRagonGames.JRRagonChess.BoardState {
 
 
 
+        public bool HasCastleRights => gameDataRegister[CastleMask] > 0;
+
         public bool CastleRightsWhiteKing {
             get => gameDataRegister[WhiteKingsCastle] != 0;
             set => gameDataRegister[WhiteKingsCastle] = value ? 1 : 0;
         }
-
         public bool CastleRightsWhiteQueen {
             get => gameDataRegister[WhiteQueenCastle] != 0;
             set => gameDataRegister[WhiteQueenCastle] = value ? 1 : 0;
         }
-
         public bool CastleRightsBlackKing {
             get => gameDataRegister[BlackKingsCastle] != 0;
             set => gameDataRegister[BlackKingsCastle] = value ? 1 : 0;
         }
-
         public bool CastleRightsBlackQueen {
             get => gameDataRegister[BlackQueenCastle] != 0;
             set => gameDataRegister[BlackQueenCastle] = value ? 1 : 0;
@@ -64,15 +60,12 @@ namespace JRRagonGames.JRRagonChess.BoardState {
                 ChessTeam.BlackTeam => isQueenside ? BlackQueenCastle : BlackKingsCastle,
                 _ => -1
             }] = 0;
-
         public void RevokeCastleRights(ChessTeam team) =>
             gameDataRegister[team switch {
                 ChessTeam.WhiteTeam => WhiteKingsCastle | WhiteQueenCastle,
                 ChessTeam.BlackTeam => BlackKingsCastle | BlackQueenCastle,
                 _ => -1
             }] = 0;
-
-
 
         public bool TeamHasCastleRights(ChessTeam team) =>
             gameDataRegister[team switch {

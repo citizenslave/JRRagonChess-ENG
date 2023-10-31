@@ -1,7 +1,5 @@
 using JRRagonGames.JRRagonChess.Types;
 
-using static JRRagonGames.Utilities.BitUtilities;
-
 namespace JRRagonGames.JRRagonChess.BoardState {
     public partial class Board {
         private const int ActiveTeamMask = 0x00008000; // 1 << 15

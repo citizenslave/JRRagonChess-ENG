@@ -63,7 +63,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
-        public static bool IsMoveValid(ChessMove move, Board currentBoardState) {
+        public static bool IsMovePossible(ChessMove move, Board currentBoardState) =>
             return PieceFactory(move.StartPosition, currentBoardState).IsMoveLegal(move, currentBoardState);
         }
 

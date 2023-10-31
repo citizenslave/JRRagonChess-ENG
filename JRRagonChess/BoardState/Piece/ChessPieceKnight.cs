@@ -11,7 +11,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
         public ChessPieceKnight(int team, Position position)
             : base(ChessPieceKnightId, team, position) { }
 
-        private new readonly int[] moveOffsets = new int[] { -17, -15, -10, -6, 6, 10, 15, 17 };
+        private static new readonly int[] moveOffsets = new int[] { -17, -15, -10, -6, 6, 10, 15, 17 };
 
 
 

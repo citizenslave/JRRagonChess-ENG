@@ -28,7 +28,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
-        protected readonly int[] moveOffsets = new int[] { -9, -7, 7, 9, -8, -1, 1, 8 };
+        protected static readonly int[] moveOffsets = new int[] { -9, -7, 7, 9, -8, -1, 1, 8 };
 
 
 

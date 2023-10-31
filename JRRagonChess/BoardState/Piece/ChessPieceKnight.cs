@@ -12,10 +12,13 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
             : base(ChessPieceKnightId, team, position) { }
 
         private new readonly int[] moveOffsets = new int[] { -17, -15, -10, -6, 6, 10, 15, 17 };
-        /// Matching capture offsets, home ranks irrelevant
+
+
 
         protected override List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) =>
             GetFixedOffsetMoves(currentBoardState, moveOffsets);
+
+
 
         protected override bool IsMoveValid(ChessMove move, Board currentBoardState) {
             if (!base.IsMoveValid(move, currentBoardState)) return false;

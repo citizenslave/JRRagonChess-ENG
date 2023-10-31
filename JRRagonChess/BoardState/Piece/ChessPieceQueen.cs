@@ -1,6 +1,10 @@
-﻿using JRRagonGames.JRRagonChess.Types;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
+using JRRagonGames.JRRagonChess.Types;
+
 using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
+
+
 
 namespace JRRagonGames.JRRagonChess.BoardState.Piece {
     internal class ChessPieceQueen : ChessPieceBase {

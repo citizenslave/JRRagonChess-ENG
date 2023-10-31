@@ -22,6 +22,23 @@ namespace JRRagonGames.JRRagonChess {
 
         public string FenCode => ExtractCurrentFen(CurrentBoardState);
 
+
+
+        #region Constructors and Factories
+        public ChessGame() : this(ParseFen(startpos)) { }
+        public ChessGame(string fenCode) : this(ParseFen(fenCode)) { }
+        public ChessGame(Board boardState, bool isSimulated = false) {
+            CurrentBoardState = boardState;
+            if (!isSimulated) UpdateGameState();
+        }
+
+        public ChessGame GetSimulation() => new ChessGame(CurrentBoardState.Copy(), true);
+        #endregion
+
+
+
+        /// TODO: Make this private.
+        ///
         public Board CurrentBoardState { get; private set; }
 
         #region Move List
@@ -32,22 +49,6 @@ namespace JRRagonGames.JRRagonChess {
         public List<ChessMove> GetLegalMovesFrom(Position position) => new List<ChessMove>();
         public List<ChessMove> GetPseudoLegalMovesFrom(Position position) => CurrentBoardState.GetPseudoLegalMovesFrom(position);
         #endregion
-
-        #region Constructors
-        public ChessGame() : this(ParseFen(startpos)) { }
-
-        public ChessGame(string fenCode) : this(ParseFen(fenCode)) { }
-
-        public ChessGame(Board boardState, bool isSimulated = false) {
-            SetBoardState(CurrentBoardState = boardState);
-            if (!isSimulated) UpdateGameState();
-        }
-        #endregion
-
-        public void SetBoardState(Board state) {
-            moveList.Clear();
-            CurrentBoardState = state;
-        }
 
 
 

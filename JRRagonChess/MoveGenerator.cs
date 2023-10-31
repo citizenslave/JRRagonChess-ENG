@@ -36,7 +36,7 @@ namespace JRRagonGames.JRRagonChess {
         }
 
         private bool IsLegalMove(ChessMove move) {
-            ChessGame temporaryGame = new ChessGame(currentGame.CurrentBoardState.Copy(), true);
+            ChessGame temporaryGame = currentGame.GetSimulation();
             temporaryGame.ExecuteMove(move, true);
 
             return !(new MoveGenerator(temporaryGame)).IsInCheck();

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using JRRagonGames.JRRagonChess.Types;
 
@@ -16,14 +17,8 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
-        protected override bool IsMoveValid(ChessMove move, Board currentBoardState) {
-            if (!base.IsMoveValid(move, currentBoardState)) return false;
-
-            if (new List<int>(moveOffsets[4..]).FindIndex(
-                offset => (move.EndPosition.Index - move.StartPosition.Index) % offset == 0
-            ) == -1) return false;
-
-            return true;
-        }
+        protected override bool IsMoveValid(ChessMove move, Board currentBoardState) =>
+            base.IsMoveValid(move, currentBoardState) &&
+            (new List<int>(moveOffsets[4..]).FindIndex(SlidingOffsetSelector(move)) != -1);
     }
 }

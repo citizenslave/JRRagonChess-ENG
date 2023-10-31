@@ -11,14 +11,16 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
             List<ChessMove> moves = new List<ChessMove>();
 
             foreach (int moveOffset in moveOffsets[0..4]) {
-                for (int searchIndex = PiecePosition.Index; IsValidSquare(searchIndex, moveOffset); searchIndex += moveOffset) {
-                    int targetIndex = searchIndex + moveOffset;
-                    Position targetPosition = Position.GetPositionFromIndex(targetIndex);
-                    int pieceNibbleAtTarget = currentBoardState[searchIndex + moveOffset];
+                for (int searchIndex = piecePosition.Index; IsValidSquare(searchIndex, moveOffset); searchIndex += moveOffset) {
+                    int targetIndex = searchIndex + moveOffset,
+                        pieceNibbleAtTarget = currentBoardState[targetIndex];
 
-                    if (pieceNibbleAtTarget == ChessPieceNone || GetPieceTeamRaw(pieceNibbleAtTarget) != PieceTeam)
-                        moves.Add(new ChessMove(PiecePosition, targetPosition));
-                    if (pieceNibbleAtTarget != ChessPieceNone) break;
+                    bool targetingPiece = pieceNibbleAtTarget != ChessPieceNone,
+                        targetingOpponent = targetingPiece && GetTeamFromNibble(pieceNibbleAtTarget) != chessTeam;
+
+                    if (!targetingPiece || targetingOpponent)
+                        moves.Add(new ChessMove(piecePosition, Position.GetPositionFromIndex(targetIndex)));
+                    if (targetingPiece) break;
                 }
             }
 

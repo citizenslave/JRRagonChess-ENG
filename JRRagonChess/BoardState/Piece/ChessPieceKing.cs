@@ -15,50 +15,51 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
         /// Matching capture offsets, home ranks irrelevant
 
         protected override List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) {
-            List<ChessMove> moves = new List<ChessMove>();
+            List<ChessMove> legalMoves = new List<ChessMove>();
 
 
 
             foreach (int moveOffset in moveOffsets) {
-                int targetIndex = PiecePosition.OffsetByIndex(moveOffset).Index;
-                if (targetIndex < 0 || targetIndex >= TileCount) continue;
 
-                Position targetPosition = GetPositionFromIndex(targetIndex);
-                int toFile = targetPosition.file, fromFile = PiecePosition.file;
-                if (Math.Abs(toFile - fromFile) > 1) continue;
+                if (!IsValidSquare(piecePosition.Index, moveOffset)) continue;
 
-                int pieceNibbleAtTarget = currentBoardState[targetIndex];
-                if (pieceNibbleAtTarget == 0 || GetPieceTeamRaw(pieceNibbleAtTarget) != PieceTeam)
-                    moves.Add(new ChessMove(PiecePosition, targetPosition));
+                Position targetPosition = piecePosition.OffsetByIndex(moveOffset);
+                int pieceNibbleAtTarget = currentBoardState[targetPosition.Index];
+
+                bool targetingPiece = pieceNibbleAtTarget != ChessPieceNone;
+                bool targetingOpponent = targetingPiece && GetTeamFromNibble(pieceNibbleAtTarget) != chessTeam;
+                if (targetingPiece && !targetingOpponent) continue;
+
+                legalMoves.Add(new ChessMove(piecePosition, targetPosition));
             }
 
 
 
-            if (currentBoardState.TeamHasCastleRights((ChessTeam)TeamIndex)) {
-                if (currentBoardState.GetCastleRights((ChessTeam)TeamIndex, true)) {
+            if (currentBoardState.TeamHasCastleRights((ChessTeam)teamIndex)) {
+                if (currentBoardState.GetCastleRights((ChessTeam)teamIndex, true)) {
                     int[] queensideCastleOffsets = new int[] { -1, -2, -3 };
                     bool isValid = true;
                     foreach (int queensideCastleOffset in queensideCastleOffsets) {
-                        int checkIndex = PiecePosition.OffsetByIndex(queensideCastleOffset).Index;
+                        int checkIndex = piecePosition.OffsetByIndex(queensideCastleOffset).Index;
                         if (currentBoardState[checkIndex] != ChessPieceNone) isValid = false;
                     }
-                    if (isValid) moves.Add(new ChessMove(PiecePosition, PiecePosition.OffsetByIndex(-2), ChessMove.MoveFlag.Castle));
+                    if (isValid) legalMoves.Add(new ChessMove(piecePosition, piecePosition.OffsetByIndex(-2), ChessMove.MoveFlag.Castle));
                 }
 
-                if (currentBoardState.GetCastleRights((ChessTeam)TeamIndex, false)) {
+                if (currentBoardState.GetCastleRights((ChessTeam)teamIndex, false)) {
                     int[] kingsideCastleOffsets = new int[] { 1, 2 };
                     bool isValid = true;
                     foreach (int kingsideCastleOffset in kingsideCastleOffsets) {
-                        int checkIndex = PiecePosition.OffsetByIndex(kingsideCastleOffset).Index;
+                        int checkIndex = piecePosition.OffsetByIndex(kingsideCastleOffset).Index;
                         if (currentBoardState[checkIndex] != ChessPieceNone) isValid = false;
                     }
-                    if (isValid) moves.Add(new ChessMove(PiecePosition, PiecePosition.OffsetByIndex(2), ChessMove.MoveFlag.Castle));
+                    if (isValid) legalMoves.Add(new ChessMove(piecePosition, piecePosition.OffsetByIndex(2), ChessMove.MoveFlag.Castle));
                 }
             }
 
 
 
-            return moves;
+            return legalMoves;
         }
 
         protected override bool IsMoveValid(ChessMove move, Board currentBoardState) {

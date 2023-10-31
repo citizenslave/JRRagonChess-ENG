@@ -15,24 +15,25 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
         /// Matching capture offsets, home ranks irrelevant
 
         protected override List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) {
-            List<ChessMove> moves = new List<ChessMove>();
+            List<ChessMove> legalMoves = new List<ChessMove>();
 
 
 
             foreach (int moveOffset in moveOffsets) {
-                int targetIndex = PiecePosition.OffsetByIndex(moveOffset).Index;
-                if (targetIndex < 0 || targetIndex >= TileCount) continue;
 
-                Position targetPosition = Position.GetPositionFromIndex(targetIndex);
-                int toFile = targetPosition.file, fromFile = PiecePosition.file;
-                if (Math.Abs(toFile - fromFile) > 2) continue;
+                if (!IsValidSquare(piecePosition.Index, moveOffset)) continue;
 
-                int pieceNibbleAtTarget = currentBoardState[targetIndex];
-                if (pieceNibbleAtTarget == 0 || GetPieceTeamRaw(pieceNibbleAtTarget) != PieceTeam)
-                    moves.Add(new ChessMove(PiecePosition, targetPosition));
+                Position targetPosition = piecePosition.OffsetByIndex(moveOffset);
+                int pieceNibbleAtTarget = currentBoardState[targetPosition.Index];
+
+                bool targetingPiece = pieceNibbleAtTarget != ChessPieceNone;
+                bool targetingOpponent = targetingPiece && GetTeamFromNibble(pieceNibbleAtTarget) != chessTeam;
+                if (targetingPiece && !targetingOpponent) continue;
+
+                legalMoves.Add(new ChessMove(piecePosition, targetPosition));
             }
 
-            return moves;
+            return legalMoves;
         }
 
         protected override bool IsMoveValid(ChessMove move, Board currentBoardState) {

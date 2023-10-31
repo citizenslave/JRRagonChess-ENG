@@ -10,18 +10,20 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
-        protected int PieceType;
-        protected int PieceTeam;
-        protected int TeamIndex;
-        protected Position PiecePosition;
+        protected int pieceTypeNibble;
+        protected int pieceTeamNibble;
+        protected int teamIndex;
+        protected ChessTeam chessTeam;
+        protected Position piecePosition;
 
 
 
         public ChessPieceBase(int type, int team, Position position) {
-            PieceType = type;
-            PieceTeam = team;
-            TeamIndex = PieceTeam >> TeamIndexOffset;
-            PiecePosition = position;
+            pieceTypeNibble = type;
+            pieceTeamNibble = team;
+            teamIndex = pieceTeamNibble >> TeamIndexOffset;
+            chessTeam = (ChessTeam)teamIndex;
+            piecePosition = position;
         }
 
 
@@ -48,14 +50,14 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
         protected virtual bool IsMoveValid(ChessMove move, Board currentBoardState) {
-            if (PieceType == ChessPieceNone) return false;
+            if (pieceTypeNibble == ChessPieceNone) return false;
             
-            int teamValidationPiece = GetPieceNibble(currentBoardState.ActiveChessTeam, PieceType);
-            if ((PieceType | PieceTeam) != teamValidationPiece) return false;
+            int teamValidationPiece = GetPieceNibble(currentBoardState.ActiveChessTeam, pieceTypeNibble);
+            if ((pieceTypeNibble | pieceTeamNibble) != teamValidationPiece) return false;
             
             int pieceToCapture = currentBoardState[move.EndPosition.Index];
             int endSquareTeam = GetPieceTeamRaw(pieceToCapture);
-            if (pieceToCapture > 0 && PieceTeam == endSquareTeam) return false;
+            if (pieceToCapture > 0 && pieceTeamNibble == endSquareTeam) return false;
 
             return true;
         }

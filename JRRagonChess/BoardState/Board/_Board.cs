@@ -47,7 +47,7 @@ namespace JRRagonGames.JRRagonChess.BoardState {
             ChessTeam _activeTeam,
             CastleRights _castleRights,
             string _enPassantFileName,
-            int _halfTurn,
+            int _halfCount,
             int _turnCount
         ) {
             pieceData = (int[])_pieceData.Clone();
@@ -55,7 +55,7 @@ namespace JRRagonGames.JRRagonChess.BoardState {
             AllCastleRights = _castleRights;
             ActiveChessTeam = _activeTeam;
             if (!string.IsNullOrEmpty(_enPassantFileName)) EnPassantName = _enPassantFileName;
-            HalfCount = _halfTurn;
+            HalfCount = _halfCount;
             TurnCount = _turnCount;
         }
         #endregion

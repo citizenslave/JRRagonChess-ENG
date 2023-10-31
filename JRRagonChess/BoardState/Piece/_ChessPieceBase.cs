@@ -35,13 +35,13 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
-        protected static bool IsValidSquare(int initialIndex, int moveOffset) {
+        protected static bool IsValidSquare(int initialIndex, int moveOffset, int max = 2) {
             int targetIndex = initialIndex + moveOffset;
             if (targetIndex < 0 || targetIndex >= Board.Constants.TileCount) return false;
 
             Position targetPosition = Position.GetPositionFromIndex(targetIndex);
             int toFile = targetPosition.file, fromFile = Position.GetFileFromIndex(initialIndex);
-            if (Math.Abs(toFile - fromFile) > 2) return false;
+            if (Math.Abs(toFile - fromFile) > max) return false;
 
             return true;
         }

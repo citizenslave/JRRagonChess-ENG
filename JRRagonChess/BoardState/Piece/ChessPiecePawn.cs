@@ -1,11 +1,14 @@
 ﻿using JRRagonGames.JRRagonChess.Types;
 using System.Collections.Generic;
-using static JRRagonGames.JRRagonChess.BoardState.Board;
-using static JRRagonGames.JRRagonChess.BoardState.Board.Constants;
+
+using JRRagonGames.JRRagonChess.Types;
+
 using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
 
+
+
 namespace JRRagonGames.JRRagonChess.BoardState.Piece {
-    public class ChessPiecePawn : ChessPieceBase {
+    internal class ChessPiecePawn : ChessPieceBase {
         public ChessPiecePawn(int team, Position position)
             : base(ChessPiecePawnId, team, position) { }
 

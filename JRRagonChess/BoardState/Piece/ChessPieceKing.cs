@@ -1,17 +1,23 @@
 ﻿using System.Collections.Generic;
-using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
-using static JRRagonGames.JRRagonChess.BoardState.Board.Constants;
-using static JRRagonGames.JRRagonChess.Types.Position;
-using System;
+
 using JRRagonGames.JRRagonChess.Types;
+
+using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
+
+
 
 namespace JRRagonGames.JRRagonChess.BoardState.Piece {
     internal class ChessPieceKing : ChessPieceBase {
         public ChessPieceKing(int team, Position position)
             : base(ChessPieceKingId, team, position) { }
 
+        /// Uses standard offsets
+        /// Matching capture offsets, home ranks irrelevant
+
         protected override List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) {
             List<ChessMove> moves = new List<ChessMove>();
+
+
 
             foreach (int moveOffset in moveOffsets) {
                 int targetIndex = PiecePosition.OffsetByIndex(moveOffset).Index;

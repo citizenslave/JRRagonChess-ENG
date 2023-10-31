@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
-using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
-using static JRRagonGames.JRRagonChess.BoardState.Board.Constants;
+
 using JRRagonGames.JRRagonChess.Types;
+
+using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
+
+
 
 namespace JRRagonGames.JRRagonChess.BoardState.Piece {
     internal class ChessPieceRook : ChessPieceBase {

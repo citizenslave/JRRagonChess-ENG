@@ -7,9 +7,11 @@ using static JRRagonGames.JRRagonChess.Types.PieceUtil;
 namespace JRRagonGames.JRRagonChess {
     public class MoveGenerator {
         public MoveGenerator(ChessGame _currentGame) { currentGame = _currentGame; }
-
         private readonly ChessGame currentGame;
 
+
+
+        #region Move Generation
         public List<ChessMove> GenerateAllMoves(bool legal = true) {
             List<ChessMove> allMoves = new List<ChessMove>();
 
@@ -41,11 +43,16 @@ namespace JRRagonGames.JRRagonChess {
 
             return !(new MoveGenerator(temporaryGame)).IsInCheck();
         }
+        #endregion
 
+
+
+        #region Simulation Interface
         public bool IsInCheck() {
             Position piecePosition = currentGame.CurrentBoardState.OtherKingPosition;
 
             return GenerateAllMoves(false).FindIndex(move => move.EndPosition.Index == piecePosition.Index) != -1;
         }
+        #endregion
     }
 }

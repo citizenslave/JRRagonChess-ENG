@@ -32,6 +32,10 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
+        public static List<ChessMove> GetPseudoLegalMovesFromPosition(Position startPosition, Board currentBoardState) =>
+            PieceFactory(startPosition, currentBoardState).GetPseudoLegalMovesForPiece(currentBoardState);
+        protected virtual List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) => new List<ChessMove>();
+
         protected List<ChessMove> GetFixedOffsetMoves(
             Board currentBoardState,
             int[] offsets,
@@ -39,9 +43,25 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
         ) => new List<int>(offsets).FindAll(o => IsValidSquare(currentBoardState, this, o * directionMultiplier))
                 .ConvertAll(o => new ChessMove(piecePosition, piecePosition.OffsetByIndex(o * directionMultiplier)));
 
-        public static List<ChessMove> GetPseudoLegalMovesFromPosition(Position startPosition, Board currentBoardState) =>
-            PieceFactory(startPosition, currentBoardState).GetPseudoLegalMovesForPiece(currentBoardState);
-        protected virtual List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) => new List<ChessMove>();
+        protected List<ChessMove> GetSlidingMoves(Board currentBoardState, int[] moveOffsets) {
+            List<ChessMove> moves = new List<ChessMove>();
+
+            foreach (int moveOffset in moveOffsets) {
+                for (int searchIndex = piecePosition.Index; IsValidSquare(searchIndex, moveOffset); searchIndex += moveOffset) {
+                    int targetIndex = searchIndex + moveOffset,
+                        pieceNibbleAtTarget = currentBoardState[targetIndex];
+
+                    bool targetingPiece = pieceNibbleAtTarget != ChessPieceNone,
+                        targetingOpponent = targetingPiece && GetTeamFromNibble(pieceNibbleAtTarget) != chessTeam;
+
+                    if (!targetingPiece || targetingOpponent)
+                        moves.Add(new ChessMove(piecePosition, Position.GetPositionFromIndex(targetIndex)));
+                    if (targetingPiece) break;
+                }
+            }
+
+            return moves;
+        }
 
 
 

@@ -15,55 +15,41 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
         private readonly int[] pushOffsets = new[] { 8, 16 }, homeRanks = new[] { 1, 6 };
 
         protected override List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) {
-            List<ChessMove> legalMoves = new List<ChessMove>();
-
             int directionMultiplier = Board.TeamDirectionMultiplier((ChessTeam)teamIndex);
 
-            foreach (int moveOffset in moveOffsets) {
-                int adjustedOffset = moveOffset * directionMultiplier;
-                if (!IsValidSquare(currentBoardState, this, adjustedOffset, 1)) continue;
-
-
-
-                Position targetPosition = piecePosition.OffsetByIndex(adjustedOffset);
-                int pieceNibbleAtTarget = currentBoardState[targetPosition.Index];
-                bool targetingPiece = pieceNibbleAtTarget != ChessPieceNone;
-
-                bool targetingEnPassant = true &&
-                    currentBoardState.HasEnPassant &&
-                    targetPosition.Index == currentBoardState.EnPassantIndex &&
-                true;
-
-                if (!targetingPiece && !targetingEnPassant) continue;
-
-                int flag = targetingEnPassant ? ChessMove.MoveFlag.EnPassant
-                    : ChessMove.MoveFlag.NoMoveFlag;
-                ChessMove move = new ChessMove(piecePosition, targetPosition, flag);
-                List<ChessMove> promotionMoves = GetPromotionMoves(move);
-
-                legalMoves.AddRange(promotionMoves);
-            }
+            List<ChessMove> legalMoves = GetFixedOffsetMoves(currentBoardState, moveOffsets, directionMultiplier)
+                .FindAll(m =>
+                    currentBoardState[m.EndPosition.Index] != ChessPieceNone ||
+                    IsTargetingEnPassant(currentBoardState, m.EndPosition)
+                ).ConvertAll(m => !IsTargetingEnPassant(currentBoardState, m.EndPosition) ? m
+                    : new ChessMove(m.StartPosition, m.EndPosition, ChessMove.MoveFlag.EnPassant)
+                );
 
             foreach (int moveOffset in pushOffsets) {
-                int adjustedOffset = moveOffset * directionMultiplier,
-                    targetIndex = piecePosition.OffsetByIndex(adjustedOffset).Index;
-
-                bool targetOccupied = currentBoardState[targetIndex] != ChessPieceNone;
-                if (targetOccupied) break;
-
-                Position targetPosition = Position.GetPositionFromIndex(targetIndex);
+                int adjustedOffset = moveOffset * directionMultiplier;
+                Position targetPosition = piecePosition.OffsetByIndex(adjustedOffset);
+                if (currentBoardState[targetPosition.Index] != ChessPieceNone) break;
 
                 int flag = moveOffset == pushOffsets[1] ? ChessMove.MoveFlag.DoublePush
                     : ChessMove.MoveFlag.NoMoveFlag;
                 ChessMove move = new ChessMove(piecePosition, targetPosition, flag);
-                List<ChessMove> promotionMoves = GetPromotionMoves(move);
 
-                legalMoves.AddRange(promotionMoves);
+                legalMoves.Add(move);
 
                 if (piecePosition.rank != homeRanks[teamIndex]) break;
             }
 
-            return legalMoves;
+            List<ChessMove> promotionMoves = new List<ChessMove>();
+            foreach (ChessMove move in legalMoves) promotionMoves.AddRange(GetPromotionMoves(move));
+
+            return promotionMoves;
+        }
+
+        private static bool IsTargetingEnPassant(Board currentBoardState, Position targetPosition) {
+            return true &&
+                                    currentBoardState.HasEnPassant &&
+                                    targetPosition.Index == currentBoardState.EnPassantIndex &&
+                                true;
         }
 
         private List<ChessMove> GetPromotionMoves(ChessMove move) {

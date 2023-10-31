@@ -25,8 +25,8 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
             return moves;
         }
 
-        protected override bool IsMoveLegal(ChessMove move, Board currentBoardState) {
-            if (!base.IsMoveLegal(move, currentBoardState)) return false;
+        protected override bool IsMoveValid(ChessMove move, Board currentBoardState) {
+            if (!base.IsMoveValid(move, currentBoardState)) return false;
 
             return true;
         }

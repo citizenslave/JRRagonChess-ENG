@@ -47,7 +47,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
-        protected virtual bool IsMoveLegal(ChessMove move, Board currentBoardState) {
+        protected virtual bool IsMoveValid(ChessMove move, Board currentBoardState) {
             if (PieceType == ChessPieceNone) return false;
             
             int teamValidationPiece = GetPieceNibble(currentBoardState.ActiveChessTeam, PieceType);

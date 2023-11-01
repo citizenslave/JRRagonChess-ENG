@@ -8,16 +8,16 @@ using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants
 
 namespace JRRagonGames.JRRagonChess.BoardState.Piece {
     internal class ChessPieceQueen : ChessPieceBase {
-        public ChessPieceQueen(int team, Position position)
-            : base(ChessPieceQueenId, team, position) { }
+        public ChessPieceQueen(int team, Position position, Board board)
+            : base(ChessPieceQueenId, team, position, board) { }
 
-        protected override List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) =>
-            GetSlidingMoves(currentBoardState, moveOffsets);
+        protected override List<ChessMove> GetPseudoLegalMovesForPiece() =>
+            GetSlidingMoves(moveOffsets);
 
 
 
-        protected override bool IsMoveValid(ChessMove move, Board currentBoardState) =>
-            base.IsMoveValid(move, currentBoardState) &&
+        protected override bool IsMoveValid(ChessMove move) =>
+            base.IsMoveValid(move) &&
             (new List<int>(moveOffsets).FindIndex(SlidingOffsetSelector(move)) != -1);
     }
 }

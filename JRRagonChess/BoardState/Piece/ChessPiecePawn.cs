@@ -10,8 +10,8 @@ using static JRRagonGames.JRRagonChess.Types.ChessMove.MoveFlag;
 
 namespace JRRagonGames.JRRagonChess.BoardState.Piece {
     internal class ChessPiecePawn : ChessPieceBase {
-        public ChessPiecePawn(int team, Position position)
-            : base(ChessPiecePawnId, team, position) { }
+        public ChessPiecePawn(int team, Position position, Board board)
+            : base(ChessPiecePawnId, team, position, board) { }
 
         private static readonly int[] captureOffsets = new[] { 7, 9 },
             pushOffsets = new[] { 8, 16 },
@@ -26,11 +26,11 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
-        protected override List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) {
+        protected override List<ChessMove> GetPseudoLegalMovesForPiece() {
             int directionMultiplier = Board.TeamDirectionMultiplier((ChessTeam)teamIndex);
 
-            List<ChessMove> legalMoves = GetCaptureMoves(currentBoardState, directionMultiplier);
-            legalMoves.AddRange(GetPushMoves(currentBoardState, directionMultiplier));
+            List<ChessMove> legalMoves = GetCaptureMoves(directionMultiplier);
+            legalMoves.AddRange(GetPushMoves(directionMultiplier));
 
             List<ChessMove> promotionMoves = new List<ChessMove>();
             foreach (ChessMove move in legalMoves) promotionMoves.AddRange(GetPromotionMoves(move));
@@ -40,10 +40,10 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
-        private List<ChessMove> GetCaptureMoves(Board currentBoardState, int directionMultiplier) =>
-            GetFixedOffsetMoves(currentBoardState, captureOffsets, directionMultiplier)
-                .FindAll(FilterValidCaptures(currentBoardState))
-                .ConvertAll(SetEnPassantFlag(currentBoardState));
+        private List<ChessMove> GetCaptureMoves(int directionMultiplier) =>
+            GetFixedOffsetMoves(captureOffsets, directionMultiplier)
+                .FindAll(FilterValidCaptures(board))
+                .ConvertAll(SetEnPassantFlag(board));
 
         private static Predicate<ChessMove> FilterValidCaptures(Board currentBoardState) =>
             m => currentBoardState[m.EndPosition.Index] != ChessPieceNone ||
@@ -58,12 +58,12 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
-        private List<ChessMove> GetPushMoves(Board currentBoardState, int directionMultiplier) {
+        private List<ChessMove> GetPushMoves(int directionMultiplier) {
             List<ChessMove> pushMoves = new List<ChessMove>();
 
             foreach (int moveOffset in pushOffsets) {
                 Position targetPosition = piecePosition.OffsetByIndex(moveOffset * directionMultiplier);
-                if (currentBoardState[targetPosition.Index] != ChessPieceNone) break;
+                if (board[targetPosition.Index] != ChessPieceNone) break;
 
                 int flag = moveOffset == pushOffsets[1] ? DoublePush : NoMoveFlag;
                 ChessMove move = new ChessMove(piecePosition, targetPosition, flag);
@@ -96,21 +96,21 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
-        protected override bool IsMoveValid(ChessMove move, Board currentBoardState) {
-            if (!base.IsMoveValid(move, currentBoardState)) return false;
+        protected override bool IsMoveValid(ChessMove move) {
+            if (!base.IsMoveValid(move)) return false;
 
             int directionMultiplier = Board.TeamDirectionMultiplier(chessTeam),
                 moveIndexOffset = move.EndPosition.Index - move.StartPosition.Index,
                 adjustedMoveOffset = directionMultiplier * moveIndexOffset;
 
-            bool isTargetOccupied = currentBoardState[move.EndPosition.Index] != ChessPieceNone;
+            bool isTargetOccupied = board[move.EndPosition.Index] != ChessPieceNone;
 
             if (adjustedMoveOffset == pushOffsets[0]) return !isTargetOccupied;
             if (piecePosition.rank == homeRanks[teamIndex] && adjustedMoveOffset == pushOffsets[1]) return !isTargetOccupied;
 
             if (!new List<int>(captureOffsets).Contains(adjustedMoveOffset)) return false;
 
-            if (currentBoardState.HasEnPassant && currentBoardState.EnPassantIndex == move.EndPosition.Index) return true;
+            if (board.HasEnPassant && board.EnPassantIndex == move.EndPosition.Index) return true;
             return isTargetOccupied;
         }
     }

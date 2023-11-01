@@ -8,33 +8,33 @@ using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants
 
 namespace JRRagonGames.JRRagonChess.BoardState.Piece {
     internal class ChessPieceKing : ChessPieceBase {
-        public ChessPieceKing(int team, Position position)
-            : base(ChessPieceKingId, team, position) { }
+        public ChessPieceKing(int team, Position position, Board board)
+            : base(ChessPieceKingId, team, position, board) { }
 
         private static readonly int[] queensideCastleOffsets = new int[] { -1, -2, -3 },
             kingsideCastleOffsets = new int[] { 1, 2 };
 
 
 
-        protected override List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) {
-            List<ChessMove> legalMoves = GetFixedOffsetMoves(currentBoardState, moveOffsets);
-            legalMoves.AddRange(GetCastleMoves(currentBoardState));
+        protected override List<ChessMove> GetPseudoLegalMovesForPiece() {
+            List<ChessMove> legalMoves = GetFixedOffsetMoves(moveOffsets);
+            legalMoves.AddRange(GetCastleMoves());
 
             return legalMoves;
         }
 
-        private List<ChessMove> GetCastleMoves(Board currentBoardState) {
+        private List<ChessMove> GetCastleMoves() {
             List<ChessMove> castleMoves = new List<ChessMove>();
 
-            if (currentBoardState.TeamHasCastleRights(chessTeam)) {
-                castleMoves.AddRange(GetSideCastleMove(currentBoardState, chessTeam, true));
-                castleMoves.AddRange(GetSideCastleMove(currentBoardState, chessTeam, false));
+            if (board.TeamHasCastleRights(chessTeam)) {
+                castleMoves.AddRange(GetSideCastleMove(chessTeam, true));
+                castleMoves.AddRange(GetSideCastleMove(chessTeam, false));
             }
 
             return castleMoves;
         }
 
-        private List<ChessMove> GetSideCastleMove(Board board, ChessTeam team, bool isQueenside) {
+        private List<ChessMove> GetSideCastleMove(ChessTeam team, bool isQueenside) {
             if (!board.GetCastleRights(team, isQueenside)) return new List<ChessMove>();
             foreach (int offset in isQueenside ? queensideCastleOffsets : kingsideCastleOffsets)
                 if (board[piecePosition.OffsetByIndex(offset).Index] != ChessPieceNone) return new List<ChessMove>();
@@ -50,8 +50,8 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
-        protected override bool IsMoveValid(ChessMove move, Board currentBoardState) {
-            if (!base.IsMoveValid(move, currentBoardState)) return false;
+        protected override bool IsMoveValid(ChessMove move) {
+            if (!base.IsMoveValid(move)) return false;
 
             return true;
         }

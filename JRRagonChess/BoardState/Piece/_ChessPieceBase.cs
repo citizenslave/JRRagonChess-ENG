@@ -10,21 +10,29 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
-        public ChessPieceBase(int type, int team, Position position) {
+        public ChessPieceBase(int type, int team, Position position, Board _board) {
             pieceTypeNibble = type;
             pieceTeamNibble = team;
+
             teamIndex = pieceTeamNibble >> TeamIndexOffset;
             chessTeam = (ChessTeam)teamIndex;
+
             piecePosition = position;
+
+            board = _board;
         }
 
 
 
         protected int pieceTypeNibble;
         protected int pieceTeamNibble;
+
         protected int teamIndex;
         protected ChessTeam chessTeam;
+
         protected Position piecePosition;
+
+        protected Board board;
 
 
 
@@ -34,13 +42,13 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
             int pieceType = GetPieceType(pieceToMove);
 
             return pieceType switch {
-                ChessPiecePawnId => new ChessPiecePawn(pieceTeam, startPosition),
-                ChessPieceKnightId => new ChessPieceKnight(pieceTeam, startPosition),
-                ChessPieceKingId => new ChessPieceKing(pieceTeam, startPosition),
-                ChessPieceRookId => new ChessPieceRook(pieceTeam, startPosition),
-                ChessPieceBishopId => new ChessPieceBishop(pieceTeam, startPosition),
-                ChessPieceQueenId => new ChessPieceQueen(pieceTeam, startPosition),
-                _ => new ChessPieceBase(pieceType, pieceTeam, startPosition),
+                ChessPiecePawnId => new ChessPiecePawn(pieceTeam, startPosition, currentBoardState),
+                ChessPieceKnightId => new ChessPieceKnight(pieceTeam, startPosition, currentBoardState),
+                ChessPieceKingId => new ChessPieceKing(pieceTeam, startPosition, currentBoardState),
+                ChessPieceRookId => new ChessPieceRook(pieceTeam, startPosition, currentBoardState),
+                ChessPieceBishopId => new ChessPieceBishop(pieceTeam, startPosition, currentBoardState),
+                ChessPieceQueenId => new ChessPieceQueen(pieceTeam, startPosition, currentBoardState),
+                _ => new ChessPieceBase(pieceType, pieceTeam, startPosition, currentBoardState),
             };
         }
 
@@ -51,25 +59,24 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
         public static List<ChessMove> GetPseudoLegalMovesFromPosition(Position startPosition, Board currentBoardState) =>
-            PieceFactory(startPosition, currentBoardState).GetPseudoLegalMovesForPiece(currentBoardState);
-        protected virtual List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) => new List<ChessMove>();
+            PieceFactory(startPosition, currentBoardState).GetPseudoLegalMovesForPiece();
+        protected virtual List<ChessMove> GetPseudoLegalMovesForPiece() => new List<ChessMove>();
 
 
 
         protected List<ChessMove> GetFixedOffsetMoves(
-            Board currentBoardState,
             int[] offsets,
             int directionMultiplier = 1
-        ) => new List<int>(offsets).FindAll(o => IsValidSquare(currentBoardState, this, o * directionMultiplier))
+        ) => new List<int>(offsets).FindAll(o => IsValidSquare(board, this, o * directionMultiplier))
                 .ConvertAll(o => new ChessMove(piecePosition, piecePosition.OffsetByIndex(o * directionMultiplier)));
 
-        protected List<ChessMove> GetSlidingMoves(Board currentBoardState, int[] moveOffsets) {
+        protected List<ChessMove> GetSlidingMoves(int[] moveOffsets) {
             List<ChessMove> moves = new List<ChessMove>();
 
             foreach (int moveOffset in moveOffsets) {
                 for (int searchIndex = piecePosition.Index; IsValidSquare(searchIndex, moveOffset); searchIndex += moveOffset) {
                     int targetIndex = searchIndex + moveOffset,
-                        pieceNibbleAtTarget = currentBoardState[targetIndex];
+                        pieceNibbleAtTarget = board[targetIndex];
 
                     bool targetingPiece = pieceNibbleAtTarget != ChessPieceNone,
                         targetingOpponent = targetingPiece && GetTeamFromNibble(pieceNibbleAtTarget) != chessTeam;
@@ -114,15 +121,15 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
         public static bool IsValidMove(ChessMove move, Board currentBoardState) =>
             currentBoardState[move.StartPosition.Index] != ChessPieceNone &&
-            PieceFactory(move.StartPosition, currentBoardState).IsMoveValid(move, currentBoardState);
+            PieceFactory(move.StartPosition, currentBoardState).IsMoveValid(move);
 
-        protected virtual bool IsMoveValid(ChessMove move, Board currentBoardState) {
+        protected virtual bool IsMoveValid(ChessMove move) {
             if (pieceTypeNibble == ChessPieceNone) return false;
             
-            int teamValidationPiece = GetPieceNibble(currentBoardState.ActiveChessTeam, pieceTypeNibble);
+            int teamValidationPiece = GetPieceNibble(board.ActiveChessTeam, pieceTypeNibble);
             if ((pieceTypeNibble | pieceTeamNibble) != teamValidationPiece) return false;
             
-            int pieceToCapture = currentBoardState[move.EndPosition.Index];
+            int pieceToCapture = board[move.EndPosition.Index];
             int endSquareTeam = GetPieceTeamRaw(pieceToCapture);
             if (pieceToCapture > 0 && pieceTeamNibble == endSquareTeam) return false;
 

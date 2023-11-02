@@ -19,11 +19,11 @@ namespace JRRagonGames.JRRagonChess.BoardState {
          * using the following registers to store all data related to the FEN.
          * 
          * 0000 0000 0000 0000 0000 0000 0000 0000
-         * r|-open-| |c-| |ep| t|--ht--| |--turn-|
+         * root |o-| |c-| |ep| |---ht--| |--turn-|
          * 
          * r    :reserved. setting this bit in a literal becomes a uint requiring 
          *       an unchecked casting.  just don't.
-         * open :these bits are unused at this time.
+         * o    :these bits are unused at this time.
          * c    :these bits store castling rights
          * ep   :first bit signals en passant, last 3 signal the affected file
          * t    :active team, true for black
@@ -86,7 +86,7 @@ namespace JRRagonGames.JRRagonChess.BoardState {
         public List<ChessMove> GetPseudoLegalMovesFrom(Position startPosition) =>
             ChessPieceBase.GetPseudoLegalMovesFromPosition(startPosition, this);
 
-        public bool IsMoveValid(ChessMove move) => ChessPieceBase.IsMoveValid(move, this);
+        public bool IsMoveValid(ChessMove move) => ChessPieceBase.IsValidMove(move, this);
         #endregion
         #endregion
 

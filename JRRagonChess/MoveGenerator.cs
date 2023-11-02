@@ -4,6 +4,8 @@ using JRRagonGames.JRRagonChess.Types;
 
 using static JRRagonGames.JRRagonChess.Types.PieceUtil;
 
+
+
 namespace JRRagonGames.JRRagonChess {
     public class MoveGenerator {
         public MoveGenerator(ChessGame _currentGame) { currentGame = _currentGame; }

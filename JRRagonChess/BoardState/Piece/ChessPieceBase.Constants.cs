@@ -15,7 +15,6 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
             public const int ChessPieceTeamMask = 0b1000;
             public const int ChessPieceTypeMask = 0b0111;
 
-            public const int TeamPieceOffset = 0b1100;
             public const int TeamIndexOffset = 0b0011;
 
             public const string FenIndex = "-PNK-RBQ-pnk-rbq";

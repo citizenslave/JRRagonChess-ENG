@@ -1,37 +1,27 @@
 ﻿using System.Collections.Generic;
-using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
-using static JRRagonGames.JRRagonChess.BoardState.Board.Constants;
-using System;
+
 using JRRagonGames.JRRagonChess.Types;
+
+using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
+
+
 
 namespace JRRagonGames.JRRagonChess.BoardState.Piece {
     internal class ChessPieceKnight : ChessPieceBase {
-        public ChessPieceKnight(int team, Position position)
-            : base(ChessPieceKnightId, team, position) { }
+        public ChessPieceKnight(int team, Position position, Board board)
+            : base(ChessPieceKnightId, team, position, board) { }
 
-        private new readonly int[] moveOffsets = new int[] { -17, -15, -10, -6, 6, 10, 15, 17 };
+        private static new readonly int[] moveOffsets = new int[] { -17, -15, -10, -6, 6, 10, 15, 17 };
 
-        protected override List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) {
-            List<ChessMove> moves = new List<ChessMove>();
 
-            foreach (int moveOffset in moveOffsets) {
-                int targetIndex = PiecePosition.OffsetByIndex(moveOffset).Index;
-                if (targetIndex < 0 || targetIndex >= TileCount) continue;
 
-                Position targetPosition = Position.GetPositionFromIndex(targetIndex);
-                int toFile = targetPosition.file, fromFile = PiecePosition.file;
-                if (Math.Abs(toFile - fromFile) > 2) continue;
+        protected override List<ChessMove> GetPseudoLegalMovesForPiece() =>
+            GetFixedOffsetMoves(moveOffsets);
 
-                int pieceNibbleAtTarget = currentBoardState[targetIndex];
-                if (pieceNibbleAtTarget == 0 || GetPieceTeamRaw(pieceNibbleAtTarget) != PieceTeam)
-                    moves.Add(new ChessMove(PiecePosition, targetPosition));
-            }
 
-            return moves;
-        }
 
-        protected override bool IsMoveLegal(ChessMove move, Board currentBoardState) {
-            if (!base.IsMoveLegal(move, currentBoardState)) return false;
+        protected override bool IsMoveValid(ChessMove move) {
+            if (!base.IsMoveValid(move)) return false;
 
             if (!new List<int>(moveOffsets).Contains(move.EndPosition.Index - move.StartPosition.Index)) return false;
 

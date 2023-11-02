@@ -1,34 +1,23 @@
-﻿using JRRagonGames.JRRagonChess.Types;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
+using JRRagonGames.JRRagonChess.Types;
+
 using static JRRagonGames.JRRagonChess.BoardState.Piece.ChessPieceBase.Constants;
+
+
 
 namespace JRRagonGames.JRRagonChess.BoardState.Piece {
     internal class ChessPieceQueen : ChessPieceBase {
-        public ChessPieceQueen(int team, Position position)
-            : base(ChessPieceQueenId, team, position) { }
+        public ChessPieceQueen(int team, Position position, Board board)
+            : base(ChessPieceQueenId, team, position, board) { }
 
-        protected override List<ChessMove> GetPseudoLegalMovesForPiece(Board currentBoardState) {
-            List<ChessMove> moves = new List<ChessMove>();
+        protected override List<ChessMove> GetPseudoLegalMovesForPiece() =>
+            GetSlidingMoves(moveOffsets);
 
-            foreach (int moveOffset in moveOffsets) {
-                for (int searchIndex = PiecePosition.Index; IsValidSquare(searchIndex, moveOffset); searchIndex += moveOffset) {
-                    int targetIndex = searchIndex + moveOffset;
-                    Position targetPosition = Position.GetPositionFromIndex(targetIndex);
-                    int pieceNibbleAtTarget = currentBoardState[searchIndex + moveOffset];
 
-                    if (pieceNibbleAtTarget == ChessPieceNone || GetPieceTeamRaw(pieceNibbleAtTarget) != PieceTeam)
-                        moves.Add(new ChessMove(PiecePosition, targetPosition));
-                    if (pieceNibbleAtTarget != ChessPieceNone) break;
-                }
-            }
 
-            return moves;
-        }
-
-        protected override bool IsMoveLegal(ChessMove move, Board currentBoardState) {
-            if (!base.IsMoveLegal(move, currentBoardState)) return false;
-
-            return true;
-        }
+        protected override bool IsMoveValid(ChessMove move) =>
+            base.IsMoveValid(move) &&
+            (new List<int>(moveOffsets).FindIndex(SlidingOffsetSelector(move)) != -1);
     }
 }

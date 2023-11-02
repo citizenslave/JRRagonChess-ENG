@@ -286,10 +286,9 @@ namespace JRRagonGames.JRRagonChess {
 
 
 
-            /// TODO: Implement this properly.  The flag will immediately end the game and the straight counter
-            /// overflows at 127, 23 plys before the progress draw is arbitrated.  The HT counter needs at least
-            /// one more bit (which could be used to represent the flag in the game data)
-            else if (boardState.HalfCount > 100) CurrentGameState = GameState.Progress;
+            /// TODO: Allow a draw to be claimed unilaterally at 100
+            /// 
+            else if (boardState.HalfCount > 150) CurrentGameState = GameState.Progress;
             //else if (CurrentBoardState.HalfTurn < 100 && CurrentGameState == GameState.Progress) CurrentGameState = GameState.Running;
 
 

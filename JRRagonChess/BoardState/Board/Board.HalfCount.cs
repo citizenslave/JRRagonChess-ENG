@@ -1,6 +1,6 @@
 namespace JRRagonGames.JRRagonChess.BoardState {
     public partial class Board {
-        private const int HalfCountMask = 0x0000ff00; // 7 << 8
+        private const int HalfCountMask = 0x000ff000; // 8 << 12
 
 
 

@@ -19,7 +19,7 @@ namespace JRRagonGames.JRRagonChess.BoardState {
          * using the following registers to store all data related to the FEN.
          * 
          * 0000 0000 0000 0000 0000 0000 0000 0000
-         * root |o-| |c-| |ep| |---ht--| |--turn-|
+         * root |ep| |c-| |---ht--| |----turn----|
          * 
          * r    :reserved. setting this bit in a literal becomes a uint requiring 
          *       an unchecked casting.  just don't.

@@ -2,7 +2,7 @@ using JRRagonGames.JRRagonChess.Types;
 
 namespace JRRagonGames.JRRagonChess.BoardState {
     public partial class Board {
-        private const int EnPassantMask = 0x0f000000; // 4 << 16
+        private const int EnPassantMask = 0x0f000000; // 4 << 24
 
 
 

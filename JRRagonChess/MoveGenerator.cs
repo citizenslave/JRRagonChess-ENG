@@ -52,6 +52,19 @@ namespace JRRagonGames.JRRagonChess {
         #region Simulation Interface
         public bool IsPositionThreatened(Position piecePosition) =>
             GenerateAllMoves(false).FindIndex(move => move.EndPosition.Index == piecePosition.Index) != -1;
+
+        public int PERFT(int depth = 1) {
+            if (depth == 1) return GenerateAllMoves(true).Count;
+            else {
+                int treeTotal = 0;
+                foreach (ChessMove move in GenerateAllMoves(true)) {
+                    ChessGame temporaryGame = currentGame.GetSimulation();
+                    temporaryGame.ExecuteMove(move);
+                    treeTotal += new MoveGenerator(temporaryGame).PERFT(depth - 1);
+                }
+                return treeTotal;
+            }
+        }
         #endregion
     }
 }

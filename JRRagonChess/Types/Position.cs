@@ -1,6 +1,11 @@
+using static JRRagonGames.JRRagonChess.Types.BoardConstants;
+
 namespace JRRagonGames.JRRagonChess.Types {
     public readonly struct Position {
         #region Data/Constructor
+        private static readonly int WhiteSquare = 0x1;
+        private static readonly int BlackSquare = 0x2;
+
         public readonly int rank, file;
         public Position(int _rank, int _file) { rank = _rank; file = _file; }
         #endregion
@@ -44,7 +49,9 @@ namespace JRRagonGames.JRRagonChess.Types {
         #region Conversion Utilities
         #region Index Conversion
         public static int GetIndex(string squareName) => GetPositionFromName(squareName).Index;
-        public static int GetIndex(int rank, int file) => rank * BoardConstants.FileCount + file;
+        public static int GetIndex(int rank, int file) => rank * FileCount + file;
+        public static int GetColorFlag(int index) => 
+            (index % FileCount) % 2 == ((index / FileCount) % 2 == 0 ? 1 : 0) ? WhiteSquare : BlackSquare;
         #endregion
 
 

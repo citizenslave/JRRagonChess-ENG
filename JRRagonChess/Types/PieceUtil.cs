@@ -7,8 +7,11 @@ namespace JRRagonGames.JRRagonChess.Types {
     public static class PieceUtil {
         public const int PieceNone = ChessPieceNone;
         public const int PiecePawn = ChessPiecePawnId;
-        public const int PieceRook = ChessPieceRookId;
+        public const int PieceKnight = ChessPieceKnightId;
         public const int PieceKing = ChessPieceKingId;
+        public const int PieceRook = ChessPieceRookId;
+        public const int PieceBishop = ChessPieceBishopId;
+        public const int PieceQueen = ChessPieceQueenId;
 
         public const int PieceWhite = ChessPieceWhite;
         public const int PieceBlack = ChessPieceBlack;

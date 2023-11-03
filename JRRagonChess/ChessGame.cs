@@ -29,6 +29,11 @@ namespace JRRagonGames.JRRagonChess {
 
 
         public string FenCode => ExtractCurrentFen(boardState);
+        public bool CanClaimDraw => boardState.HalfCount > 100 || IsThreeFoldRepeat;
+
+        /// TODO: all of this
+        ///
+        public bool IsThreeFoldRepeat => false;
         #endregion
 
 
@@ -280,16 +285,7 @@ namespace JRRagonGames.JRRagonChess {
             MoveGenerator endGameSimulator = new MoveGenerator(this);
             if (endGameSimulator.GenerateAllMoves().Count == 0)
                 CurrentGameState = IsInCheck() ? GameState.Checkmate : GameState.Stalemate;
-
-
-
-
-
-
-            /// TODO: Allow a draw to be claimed unilaterally at 100
-            /// 
             else if (boardState.HalfCount > 150) CurrentGameState = GameState.Progress;
-            //else if (CurrentBoardState.HalfTurn < 100 && CurrentGameState == GameState.Progress) CurrentGameState = GameState.Running;
 
 
 
@@ -302,14 +298,58 @@ namespace JRRagonGames.JRRagonChess {
 
             else {
 
-                /// TODO: Implement more of this.  Two kings is the obvious material draw, but the minor piece cases
-                /// need to be handled as well and this is not doing that.  Extract to Board?
-                int pieceCounter = 0;
+                /// lichess.com rules:
+                /// https://www.reddit.com/r/chess/comments/se89db/a_writeup_on_definitions_of_insufficient_material/
+                /// 
+                /// -> K + RQP => Sufficient: DONE
+                /// -> K + B v k + b : b != B => Sufficient: DONE
+                /// -> K + BB : B != B => Sufficient: DONE
+                /// -> K + NN => Sufficient: DONE
+                /// -> K + NB => Sufficient: DONE
+                /// -> K + N v 2 => Sufficient: DONE
+                /// 
+                /// 
+
+                int pieceCounter = 0,
+                    bishopColorCounter = 0;
+
+                int[] minorPieceCounters = new int[2],
+                    knightCounters = new int[2];
+
+                bool hasMaterial = false;
                 for (int tileIndex = 0; tileIndex < TileCount; tileIndex++) {
                     if (boardState[tileIndex] != PieceNone) pieceCounter++;
-                    /// TODO: Minor Piece counters.  Extract to Board?
+                    int pieceType = ExtractPieceFromNibble(boardState[tileIndex]);
+                    ChessTeam pieceTeam = ExtractTeamFromNibble(boardState[tileIndex]);
+                    int teamIndex = (int)pieceTeam;
+
+
+
+                    if (pieceType == PiecePawn) { hasMaterial = true; break; }
+                    if (pieceType == PieceRook) { hasMaterial = true; break; }
+                    if (pieceType == PieceQueen) { hasMaterial = true; break; }
+
+
+
+                    if (pieceType == PieceKnight) knightCounters[teamIndex]++;
+                    if (knightCounters[teamIndex] >= 2) { hasMaterial = true; break; }
+
+                    if (pieceType == PieceKnight) minorPieceCounters[teamIndex]++;
+
+
+
+                    if (pieceType == PieceBishop && bishopColorCounter < 3) bishopColorCounter |= GetColorFlag(tileIndex);
+                    if (pieceType == PieceBishop && bishopColorCounter == 3) { hasMaterial = true; break; }
+
+                    if (pieceType == PieceBishop) minorPieceCounters[teamIndex]++;
+
+
+
+                    if (minorPieceCounters[teamIndex] > 1 && knightCounters[teamIndex] > 0) { hasMaterial = true; break; }
+                    if (knightCounters[teamIndex] > 0 && minorPieceCounters[teamIndex ^ 1] > 1) { hasMaterial = true; break; }
                 }
-                if (pieceCounter == 2) CurrentGameState = GameState.Material;
+
+                if (!hasMaterial) CurrentGameState = GameState.Material;
 
 
 

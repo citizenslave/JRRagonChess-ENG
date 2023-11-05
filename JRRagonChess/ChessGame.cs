@@ -29,6 +29,8 @@ namespace JRRagonGames.JRRagonChess {
 
 
         public string FenCode => ExtractCurrentFen(boardState);
+        private readonly string uciPositionFen;
+
         public bool CanClaimDraw => boardState.HalfCount > 100 || IsThreeFoldRepeat;
 
         /// TODO: all of this
@@ -43,6 +45,7 @@ namespace JRRagonGames.JRRagonChess {
         public ChessGame(string fenCode) : this(ParseFen(fenCode)) { }
         public ChessGame(Board boardState, bool isSimulated = false) {
             this.boardState = boardState;
+            uciPositionFen = FenCode;
             if (!isSimulated) UpdateGameState();
         }
 

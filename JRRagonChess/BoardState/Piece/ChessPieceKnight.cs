@@ -15,7 +15,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
-        protected override List<ChessMove> GetPseudoLegalMovesForPiece() =>
+        protected override List<ChessMove> GetPseudoLegalMovesForPiece(bool quiet = true) =>
             GetFixedOffsetMoves(moveOffsets);
 
 

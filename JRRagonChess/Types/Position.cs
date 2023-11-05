@@ -71,6 +71,12 @@ namespace JRRagonGames.JRRagonChess.Types {
         #endregion
 
 
+        #region Operators
+        public static bool operator ==(Position p1, Position p2) => p1.Index == p2.Index;
+        public static bool operator !=(Position p1, Position p2) => p1.Index != p2.Index;
+        #endregion
+
+
 
         #endregion
 

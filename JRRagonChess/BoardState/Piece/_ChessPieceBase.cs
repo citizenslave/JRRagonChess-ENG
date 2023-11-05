@@ -58,9 +58,9 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
-        public static List<ChessMove> GetPseudoLegalMovesFromPosition(Position startPosition, Board currentBoardState) =>
-            PieceFactory(startPosition, currentBoardState).GetPseudoLegalMovesForPiece();
-        protected virtual List<ChessMove> GetPseudoLegalMovesForPiece() => new List<ChessMove>();
+        public static List<ChessMove> GetPseudoLegalMovesFromPosition(Position startPosition, Board currentBoardState, bool quiet = true) =>
+            PieceFactory(startPosition, currentBoardState).GetPseudoLegalMovesForPiece(quiet);
+        protected virtual List<ChessMove> GetPseudoLegalMovesForPiece(bool quiet = true) => new List<ChessMove>();
 
 
 

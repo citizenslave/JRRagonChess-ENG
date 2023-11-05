@@ -9,7 +9,7 @@ namespace JRRagonGames.JRRagonChess.ChessUtils {
 
             ChessGame game;
             if (tokens[1] == "startpos" || tokens[1] != "fen" || tokens.Length < 8) game = new ChessGame();
-            else game = new ChessGame(string.Join(' ', tokens[2..7]));
+            else game = new ChessGame(string.Join(' ', tokens[2..8]));
 
             int movesIndex = Array.IndexOf(tokens, "moves") + 1;
             if (movesIndex == 0) return game;

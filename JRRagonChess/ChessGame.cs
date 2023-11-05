@@ -41,8 +41,8 @@ namespace JRRagonGames.JRRagonChess {
         #region Constructors and Factories
         public ChessGame() : this(ParseFen(startpos)) { }
         public ChessGame(string fenCode) : this(ParseFen(fenCode)) { }
-        public ChessGame(Board boardState, bool isSimulated = false) {
-            this.boardState = boardState;
+        public ChessGame(Board _boardState, bool isSimulated = false) {
+            boardState = _boardState;
             if (!isSimulated) UpdateGameState();
         }
 

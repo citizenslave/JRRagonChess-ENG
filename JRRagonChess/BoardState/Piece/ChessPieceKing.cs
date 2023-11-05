@@ -39,6 +39,10 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
             foreach (int offset in isQueenside ? queensideCastleOffsets : kingsideCastleOffsets)
                 if (board[piecePosition.OffsetByIndex(offset).Index] != ChessPieceNone) return new List<ChessMove>();
 
+            Position traversalPosition = piecePosition.OffsetByIndex(isQueenside ? -1 : 1);
+            /// TODO: If traversed square is "in check", return empty list.
+            /// 
+
             return new List<ChessMove>() {
                 new ChessMove(
                     piecePosition,

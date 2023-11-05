@@ -29,6 +29,8 @@ namespace JRRagonGames.JRRagonChess {
 
 
         public string FenCode => ExtractCurrentFen(boardState);
+        private readonly string uciPositionFen;
+
         public bool CanClaimDraw => boardState.HalfCount > 100 || IsThreeFoldRepeat;
 
         /// TODO: all of this
@@ -43,6 +45,7 @@ namespace JRRagonGames.JRRagonChess {
         public ChessGame(string fenCode) : this(ParseFen(fenCode)) { }
         public ChessGame(Board _boardState, bool isSimulated = false) {
             boardState = _boardState;
+            uciPositionFen = FenCode;
             if (!isSimulated) UpdateGameState();
         }
 
@@ -86,7 +89,7 @@ namespace JRRagonGames.JRRagonChess {
 
         public void ExecuteMove(ChessMove move, bool simulated = false) {
             if (!boardState.IsMoveValid(move)) return;
-            
+
 
 
             int fromIndex = move.StartPosition.Index;
@@ -117,7 +120,7 @@ namespace JRRagonGames.JRRagonChess {
 
 
 
-            if (boardState.ActiveChessTeam == ChessTeam.BlackTeam) boardState.TurnCount++;            
+            if (boardState.ActiveChessTeam == ChessTeam.BlackTeam) boardState.TurnCount++;
             boardState.ActiveChessTeam = boardState.OtherChessTeam;
             if (!simulated) UpdateGameState();
         }
@@ -367,8 +370,11 @@ namespace JRRagonGames.JRRagonChess {
 
 
 
+        public string UciPosition =>
+            $"position {(uciPositionFen == startpos ? "startpos" : $"fen {uciPositionFen}")} moves " +
+            string.Join(' ', moveList.ConvertAll(m => m.ToString()));
+
         public override string ToString() =>
-            $"{CurrentGameState}:\n{boardState}\n{ExtractCurrentFen(boardState)} moves " +
-                string.Join(' ', moveList.ConvertAll(m => m.ToString()));
+            $"{CurrentGameState}:\n{boardState}\n{UciPosition}\n{FenCode}";
     }
 }

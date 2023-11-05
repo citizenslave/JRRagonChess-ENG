@@ -53,6 +53,21 @@ namespace JRRagonGames.JRRagonChess {
         public bool IsPositionThreatened(Position piecePosition) =>
             GenerateAllMoves(false).FindIndex(move => move.EndPosition.Index == piecePosition.Index) != -1;
 
+        public Dictionary<ChessMove,int> PERFTlist(int depth = 1) {
+            Dictionary<ChessMove,int> results = new Dictionary<ChessMove,int>();
+
+            foreach (ChessMove move in GenerateAllMoves(true)) {
+                if (depth == 1) results[move] = 1;
+                else {
+                    ChessGame temporaryGame = currentGame.GetSimulation();
+                    temporaryGame.ExecuteMove(move);
+                    results[move] = new MoveGenerator(temporaryGame).PERFT(depth - 1);
+                }
+            }
+
+            return results;
+        }
+
         public int PERFT(int depth = 1) {
             if (depth == 1) return GenerateAllMoves(true).Count;
             else {

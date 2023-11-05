@@ -29,7 +29,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
         protected override List<ChessMove> GetPseudoLegalMovesForPiece(bool quiet = true) {
             int directionMultiplier = Board.TeamDirectionMultiplier((ChessTeam)teamIndex);
 
-            List<ChessMove> legalMoves = GetCaptureMoves(directionMultiplier);
+            List<ChessMove> legalMoves = GetCaptureMoves(directionMultiplier, !quiet);
             legalMoves.AddRange(GetPushMoves(directionMultiplier));
 
             List<ChessMove> promotionMoves = new List<ChessMove>();
@@ -40,13 +40,13 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
-        private List<ChessMove> GetCaptureMoves(int directionMultiplier) =>
+        private List<ChessMove> GetCaptureMoves(int directionMultiplier, bool isSearch) =>
             GetFixedOffsetMoves(captureOffsets, directionMultiplier)
-                .FindAll(FilterValidCaptures(board))
+                .FindAll(FilterValidCaptures(board, isSearch))
                 .ConvertAll(SetEnPassantFlag(board));
 
-        private static Predicate<ChessMove> FilterValidCaptures(Board currentBoardState) =>
-            m => currentBoardState[m.EndPosition.Index] != ChessPieceNone ||
+        private static Predicate<ChessMove> FilterValidCaptures(Board currentBoardState, bool isSearch) =>
+            m => isSearch || currentBoardState[m.EndPosition.Index] != ChessPieceNone ||
                 IsTargetingEnPassant(currentBoardState, m.EndPosition);
 
         private static Converter<ChessMove, ChessMove> SetEnPassantFlag(Board currentBoardState) =>

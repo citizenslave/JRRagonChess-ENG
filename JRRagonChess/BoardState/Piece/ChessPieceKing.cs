@@ -18,10 +18,12 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
         protected override List<ChessMove> GetPseudoLegalMovesForPiece(bool quiet = true) {
             List<ChessMove> legalMoves = GetFixedOffsetMoves(moveOffsets);
-            if (quiet) legalMoves.AddRange(GetCastleMoves());
+            if (quiet && !IsInCheck()) legalMoves.AddRange(GetCastleMoves());
 
             return legalMoves;
         }
+
+        private bool IsInCheck() => IsCastleTraversalPositionThreatened(piecePosition);
 
         private List<ChessMove> GetCastleMoves() {
             List<ChessMove> castleMoves = new List<ChessMove>();

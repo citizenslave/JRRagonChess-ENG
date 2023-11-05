@@ -370,6 +370,10 @@ namespace JRRagonGames.JRRagonChess {
 
 
 
+        public string UciPosition =>
+            $"position {(uciPositionFen == startpos ? "startpos" : $"fen {uciPositionFen}")} moves " +
+            string.Join(' ', moveList.ConvertAll(m => m.ToString()));
+
         public override string ToString() =>
             $"{CurrentGameState}:\n{boardState}\n{ExtractCurrentFen(boardState)} moves " +
                 string.Join(' ', moveList.ConvertAll(m => m.ToString()));

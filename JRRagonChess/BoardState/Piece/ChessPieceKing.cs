@@ -39,17 +39,12 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
             foreach (int offset in isQueenside ? queensideCastleOffsets : kingsideCastleOffsets)
                 if (board[piecePosition.OffsetByIndex(offset).Index] != ChessPieceNone) return new List<ChessMove>();
 
-            Position traversalPosition = piecePosition.OffsetByIndex(isQueenside ? -1 : 1);
-            for (int tileIndex = 0; tileIndex < BoardConstants.TileCount; tileIndex++) {
-                int nibble = board[tileIndex];
-                if (nibble == ChessPieceNone) continue;
-                if (GetTeamFromNibble(nibble) == board.ActiveChessTeam) continue;
-                if (GetPseudoLegalMovesFromPosition(Position.GetPositionFromIndex(tileIndex), board, false)
-                    .FindIndex(m => m.EndPosition == traversalPosition) != -1) return new List<ChessMove>();
-            }
 
-            /// TODO: If traversed square is "in check", return empty list.
-            /// 
+
+            Position traversalPosition = piecePosition.OffsetByIndex(isQueenside ? -1 : 1);
+            if (IsCastleTraversalPositionThreatened(traversalPosition)) return new List<ChessMove>();
+
+
 
             return new List<ChessMove>() {
                 new ChessMove(
@@ -58,6 +53,17 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
                     ChessMove.MoveFlag.Castle
                 )
             };
+        }
+
+        private bool IsCastleTraversalPositionThreatened(Position traversalPosition) {
+            for (int tileIndex = 0; tileIndex < BoardConstants.TileCount; tileIndex++) {
+                int nibble = board[tileIndex];
+                if (nibble == ChessPieceNone) continue;
+                if (GetTeamFromNibble(nibble) == board.ActiveChessTeam) continue;
+                if (GetPseudoLegalMovesFromPosition(Position.GetPositionFromIndex(tileIndex), board, false)
+                    .FindIndex(m => m.EndPosition == traversalPosition) != -1) return true;
+            }
+            return false;
         }
 
 

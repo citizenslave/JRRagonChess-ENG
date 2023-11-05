@@ -11,7 +11,7 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
         public ChessPieceQueen(int team, Position position, Board board)
             : base(ChessPieceQueenId, team, position, board) { }
 
-        protected override List<ChessMove> GetPseudoLegalMovesForPiece() =>
+        protected override List<ChessMove> GetPseudoLegalMovesForPiece(bool quiet = true) =>
             GetSlidingMoves(moveOffsets);
 
 

@@ -16,9 +16,9 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
 
 
 
-        protected override List<ChessMove> GetPseudoLegalMovesForPiece() {
+        protected override List<ChessMove> GetPseudoLegalMovesForPiece(bool quiet = true) {
             List<ChessMove> legalMoves = GetFixedOffsetMoves(moveOffsets);
-            legalMoves.AddRange(GetCastleMoves());
+            if (quiet) legalMoves.AddRange(GetCastleMoves());
 
             return legalMoves;
         }
@@ -40,6 +40,14 @@ namespace JRRagonGames.JRRagonChess.BoardState.Piece {
                 if (board[piecePosition.OffsetByIndex(offset).Index] != ChessPieceNone) return new List<ChessMove>();
 
             Position traversalPosition = piecePosition.OffsetByIndex(isQueenside ? -1 : 1);
+            for (int tileIndex = 0; tileIndex < BoardConstants.TileCount; tileIndex++) {
+                int nibble = board[tileIndex];
+                if (nibble == ChessPieceNone) continue;
+                if (GetTeamFromNibble(nibble) == board.ActiveChessTeam) continue;
+                if (GetPseudoLegalMovesFromPosition(Position.GetPositionFromIndex(tileIndex), board, false)
+                    .FindIndex(m => m.EndPosition == traversalPosition) != -1) return new List<ChessMove>();
+            }
+
             /// TODO: If traversed square is "in check", return empty list.
             /// 
 

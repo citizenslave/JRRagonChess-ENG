@@ -89,7 +89,7 @@ namespace JRRagonGames.JRRagonChess {
 
         public void ExecuteMove(ChessMove move, bool simulated = false) {
             if (!boardState.IsMoveValid(move)) return;
-            
+
 
 
             int fromIndex = move.StartPosition.Index;
@@ -120,7 +120,7 @@ namespace JRRagonGames.JRRagonChess {
 
 
 
-            if (boardState.ActiveChessTeam == ChessTeam.BlackTeam) boardState.TurnCount++;            
+            if (boardState.ActiveChessTeam == ChessTeam.BlackTeam) boardState.TurnCount++;
             boardState.ActiveChessTeam = boardState.OtherChessTeam;
             if (!simulated) UpdateGameState();
         }
@@ -375,7 +375,6 @@ namespace JRRagonGames.JRRagonChess {
             string.Join(' ', moveList.ConvertAll(m => m.ToString()));
 
         public override string ToString() =>
-            $"{CurrentGameState}:\n{boardState}\n{ExtractCurrentFen(boardState)} moves " +
-                string.Join(' ', moveList.ConvertAll(m => m.ToString()));
+            $"{CurrentGameState}:\n{boardState}\n{UciPosition}\n{FenCode}";
     }
 }

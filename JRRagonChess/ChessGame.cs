@@ -375,6 +375,6 @@ namespace JRRagonGames.JRRagonChess {
             string.Join(' ', moveList.ConvertAll(m => m.ToString()));
 
         public override string ToString() =>
-            $"{CurrentGameState}:\n{boardState}\n{UciPosition}\n{FenCode}";
+            $"{CurrentGameState}:\n\n{boardState}\n{UciPosition}\n => {FenCode}";
     }
 }

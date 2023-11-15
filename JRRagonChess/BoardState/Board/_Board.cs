@@ -95,8 +95,9 @@ namespace JRRagonGames.JRRagonChess.BoardState {
         public override string ToString() {
             byte[] _gameData = BitConverter.GetBytes(gameDataRegister.BitData);
             Array.Reverse(_gameData);
-            string boardBottom = $" ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\n  A B C D E F G H\n   {BitConverter.ToString(_gameData)}",
-                boardView = $"  A B C D E F G H\n _________________\n{Constants.FileCount}";
+            string rowMarkers = "+---+---+---+---+---+---+---+---+",
+                boardBottom = $"     a   b   c   d   e   f   g   h\n\n              {BitConverter.ToString(_gameData)}\n",
+                boardView = $"     a   b   c   d   e   f   g   h\n   {rowMarkers}\n {Constants.FileCount} ";
 
 
 
@@ -104,16 +105,16 @@ namespace JRRagonGames.JRRagonChess.BoardState {
             while (rankIndex >= 0) {
 
                 int squareIndex = Position.GetIndex(rankIndex, fileIndex++);
-                boardView += $"|{ChessPieceBase.GetFenCode(pieceData[squareIndex])}";
+                boardView += $"| {ChessPieceBase.GetFenCode(pieceData[squareIndex])} ";
 
                 if (fileIndex % Constants.FileCount == 0 ) {
                     fileIndex = 0;
                     rankIndex--;
-                    boardView += $"|{rankIndex + 2}\n{rankIndex + 1}";
+                    boardView += $"| {rankIndex + 2}\n   {rowMarkers}\n {rankIndex + 1} ";
                 }
             }
 
-            return boardView[0..^1] + boardBottom;
+            return boardView[0..^3] + boardBottom;
         }
     }
 }

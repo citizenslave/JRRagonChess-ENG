@@ -9,7 +9,7 @@ namespace JRRagonGames.JRRagonChess.Types {
         public readonly ushort moveData;
 
         #region Constructors
-        private ChessMove(ushort _moveData) { moveData = _moveData; }
+        public ChessMove(ushort _moveData) { moveData = _moveData; }
         public ChessMove(Position start, Position end, int flag = NoMoveFlag) : this(
             (ushort)(0 |
                 start.Index << MoveOffset.StartIndexOffset |

@@ -94,9 +94,14 @@ namespace JRRagonGames.Utilities {
             });
         }
 
-        private static Task<HttpJsonResponse> PostHttpRequest(Uri uri, JsonObject requestBody) {
+        protected Task<HttpJsonResponse> PostHttpRequest(string url, JsonObject requestBody) {
+            return PostHttpRequest(url, requestBody.ToJsonString());
+        }
+
+        protected Task<HttpJsonResponse> PostHttpRequest(string url, string requestBody) {
+            Uri uri = new Uri($"{CurrentHttpUrl}{url}");
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri) {
-                Content = new StringContent(requestBody.ToJsonString(), Encoding.UTF8, "application/json"),
+                Content = new StringContent(requestBody, Encoding.UTF8, "application/json"),
             };
 
             return SendHttpRequest(request);

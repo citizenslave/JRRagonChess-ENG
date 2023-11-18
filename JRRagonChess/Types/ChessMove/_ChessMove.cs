@@ -19,7 +19,7 @@ namespace JRRagonGames.JRRagonChess.Types {
         ) { }
         public ChessMove(string moveText) : this(
             Position.GetPositionFromName(moveText[..2]),
-            Position.GetPositionFromName(moveText[2..]),
+            Position.GetPositionFromName(moveText[2..4]),
             char.ToLower(moveText[^1]) switch {
                 'q' => QueenPromotion,
                 'b' => BishopPromotion,

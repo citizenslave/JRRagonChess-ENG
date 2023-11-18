@@ -11,58 +11,59 @@ using System.Threading.Tasks;
 namespace JRRagonGames.Utilities {
     public class JRRagonNetClient {
         public struct HttpJsonResponse {
-            public int status;
+            public HttpStatusCode status;
             public JsonElement json;
         }
 
-        private static readonly UdpClient udpClient = new UdpClient();
+        private readonly UdpClient udpClient = new UdpClient();
         private static readonly HttpClient httpClient = new HttpClient();
+        public bool IsListening { get; private set; } = false;
+        protected string sessionKey = string.Empty;
 
-        private static string? currentHttpUrl;
-        private static string? currentApiUrl;
+        public string CurrentHttpUrl { get; private set; } = string.Empty;
+        public string CurrentApiUrl { get; private set; } = string.Empty;
 
 
 
-        public static string FindGame(byte[] pongMsg) {
-            string sessionKey = Encoding.UTF8.GetString(pongMsg).Split(':')[1];
-            Task<HttpJsonResponse> findGameResult = PostHttpRequest(
-                new Uri($"{currentHttpUrl}/api/JRRagonChess/findGame"),
-                new JsonObject {
-                    ["requirePosition"] = false,
-                    ["requireTeam"] = false,
-                    ["sessionKey"] = sessionKey,
-                }
-            );
+        public event Action<byte[]>? OnConnectionEstablished;
+        public event Action<byte[]>? OnMessageReceived;
+        public event Action? OnDisconnected;
 
-            findGameResult.Wait();
-
-            return $"{findGameResult.Result.status}:{findGameResult.Result.json}";
-        }
-
-        public static event Action<byte[]>? OnConnectionEstablished;
-        public static event Action<byte[]>? OnMessageReceived;
-
-        public static bool Connect(string url, string api) {
+        public bool Connect(string url, string api) {
             try {
-                currentHttpUrl = url; currentApiUrl = api;
+                CurrentHttpUrl = url; CurrentApiUrl = api;
                 Task<HttpJsonResponse> pingResponseTask = PostHttpRequest(
-                    new Uri($"{url}/api/{api}/pong"),
+                    $"/api/{api}/pong",
                     new JsonObject { ["userInfo"] = "GUEST" }
                 );
                 pingResponseTask.Wait();
                 JsonElement readPongData = pingResponseTask.Result.json;
-
+                Console.WriteLine(readPongData.ToString());
                 ushort udpPort = readPongData.GetProperty("udpPort").GetUInt16();
                 udpClient.Connect(new Uri(url).Host, udpPort);
                 udpClient.BeginReceive(new AsyncCallback(ReceiveMessage), udpClient);
+                sessionKey = readPongData.GetProperty("sessionKey").GetString() ?? string.Empty;
+                IsListening = true;
+                OnDisconnected += Disconnected;
 
-                Send(Encoding.UTF8.GetBytes($"ping:{readPongData.GetProperty("sessionKey").GetString()}"));
+                Send(Encoding.UTF8.GetBytes($"ping:{sessionKey}"));
             } catch { }
 
-            return udpClient.Client.Connected;
+            return IsListening;
         }
 
-        private static void ReceiveMessage(IAsyncResult ar) {
+        public virtual void Disconnect() => PostHttpRequest(
+            $"/api/{CurrentApiUrl}/disconnect",
+            new JsonObject { ["sessionKey"] = sessionKey }
+        ).ContinueWith(t => Disconnected());
+
+        private void Disconnected() {
+            OnDisconnected -= Disconnected;
+            sessionKey = string.Empty;
+            IsListening = false;
+        }
+
+        private void ReceiveMessage(IAsyncResult ar) {
             UdpClient client = (UdpClient)ar.AsyncState;
             IPEndPoint remoteEndpoint = (IPEndPoint)client.Client.LocalEndPoint;
 
@@ -70,26 +71,28 @@ namespace JRRagonGames.Utilities {
             string cmd = Encoding.UTF8.GetString(byteData).Split(':')[0];
             if (cmd == "ping") SendPong(byteData);
             else if (cmd == "pong") OnConnectionEstablished?.Invoke(byteData);
+            else if (cmd == "disconnected") OnDisconnected?.Invoke();
             else OnMessageReceived?.Invoke(byteData);
-            client.BeginReceive(new AsyncCallback(ReceiveMessage), ar.AsyncState);
+
+            if (IsListening) client.BeginReceive(new AsyncCallback(ReceiveMessage), ar.AsyncState);
         }
 
-        private static void Send(byte[] data) => udpClient.Send(data, data.Length);
+        private void Send(byte[] data) => udpClient.Send(data, data.Length);
 
-        private static void SendPong(byte[] byteData) {
-            PostHttpRequest(
-                new Uri($"{currentHttpUrl}/api/{currentApiUrl}/pong"),
-                new JsonObject {
-                    ["sessionKey"] = Encoding.UTF8.GetString(byteData).Split(':')[1],
-                }
-            );
-        }
+        private void SendPong(byte[] byteData) => PostHttpRequest(
+            $"/api/{CurrentApiUrl}/pong",
+            new JsonObject {
+                ["sessionKey"] = Encoding.UTF8.GetString(byteData).Split(':')[1],
+            }
+        );
 
-        private static Task<HttpJsonResponse> SendHttpRequest(HttpRequestMessage request) {
+
+
+        private Task<HttpJsonResponse> SendHttpRequest(HttpRequestMessage request) {
             Task<HttpResponseMessage> response = httpClient.SendAsync(request);
             Task<Stream> responseStream = response.ContinueWith(t => t.Result.Content.ReadAsStreamAsync()).Result;
             return responseStream.ContinueWith(t => new HttpJsonResponse {
-                status = (int)response.Result.StatusCode,
+                status = response.Result.StatusCode,
                 json = JsonDocument.Parse(t.Result).RootElement,
             });
         }

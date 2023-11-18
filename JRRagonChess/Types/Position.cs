@@ -39,8 +39,10 @@ namespace JRRagonGames.JRRagonChess.Types {
 
 
         #region Components from String
-        public static int GetFileFromName(string name) => "abcdefgh".IndexOf(char.ToLower(name[0]));
-        public static int GetRankFromName(string name) => (int)(char.GetNumericValue(name[1]) - 1);
+        public static int GetFileFromName(string name) =>
+            !string.IsNullOrEmpty(name) ? "abcdefgh".IndexOf(char.ToLower(name[0])) : -1;
+        public static int GetRankFromName(string name) =>
+            !string.IsNullOrEmpty(name) && name.Length > 1 ? (int)(char.GetNumericValue(name[1]) - 1) : -1;
         #endregion
         #endregion
 

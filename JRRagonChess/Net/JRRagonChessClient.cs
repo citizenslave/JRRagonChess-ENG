@@ -22,7 +22,7 @@ namespace JRRagonGames.JRRagonChess.Net {
             public bool requireTeam;
             public string sessionKey;
 
-            public override readonly string ToString() => JsonSerializer.SerializeToElement(
+            public readonly string ToJson() => JsonSerializer.SerializeToElement(
                 this,
                 new JsonSerializerOptions { IncludeFields = true }
             ).ToString();
@@ -33,7 +33,8 @@ namespace JRRagonGames.JRRagonChess.Net {
         public PendingGameRequest MatchingRequest { get; private set; }
         public ChessTeam AssignedTeam { get; private set; }
 
-        public JRRagonChessClient Connect(string url, FindGamePayload gameRequest) {
+        public bool Connect(string url, FindGamePayload gameRequest) {
+            gamePreferences = gameRequest;
             OnConnectionEstablished -= FindGame;
             OnMessageReceived -= HandleUdpMessage;
 
@@ -42,7 +43,7 @@ namespace JRRagonGames.JRRagonChess.Net {
             OnConnectionEstablished += FindGame;
             OnMessageReceived += HandleUdpMessage;
 
-            return this;
+            return IsListening;
         }
         private FindGamePayload gamePreferences = new FindGamePayload();
 
@@ -54,7 +55,7 @@ namespace JRRagonGames.JRRagonChess.Net {
                 requirePosition = gamePreferences.requirePosition,
                 requireTeam = gamePreferences.requireTeam,
                 sessionKey = sessionKey,
-            }.ToString()
+            }.ToJson()
         ).ContinueWith(t => {
             HttpStatusCode status = t.Result.status;
             JsonElement json = t.Result.json;

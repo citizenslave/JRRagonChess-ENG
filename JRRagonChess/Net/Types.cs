@@ -18,5 +18,8 @@ namespace JRRagonGames.JRRagonChess.Net.Types {
             this,
             new JsonSerializerOptions { IncludeFields = true }
         ).ToString();
+
+        public override readonly string ToString() =>
+            $"{position}:{teamIndex}:{(requirePosition ? 1 : 0)}:{(requireTeam ? 1 : 0)}";
     }
 }

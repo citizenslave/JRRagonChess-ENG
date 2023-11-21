@@ -1,13 +1,12 @@
-﻿using JRRagonGames.Utilities;
-using System.Text.Json.Nodes;
-using System.Text;
-using System;
-using JRRagonGames.JRRagonChess.Types;
-using System.Collections.Generic;
-using System.Text.Json;
+﻿using System;
 using System.Net;
-using System.Text.Json.Serialization;
-using JRRagonGames.JRRagonChess.ChessUtils;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+
+using JRRagonGames.JRRagonChess.Types;
+using JRRagonGames.JRRagonChess.Utilities.Net;
 
 namespace JRRagonGames.JRRagonChess.Net {
     public class JRRagonChessClient : JRRagonNetClient {

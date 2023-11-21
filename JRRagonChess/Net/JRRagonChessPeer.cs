@@ -56,7 +56,30 @@ namespace JRRagonGames.JRRagonChess.Net {
         }
 
         private void MatchGame(string position, int chessTeam, bool requirePosition, bool requireTeam) {
-            if (AssignedTeam == ChessTeam.NoneTeam) AssignedTeam = (ChessTeam)(chessTeam ^ 1);
+            _pendingGameRequests.Clear();
+            _pendingGameRequests.Add(new PendingGameRequest {
+                team = requireTeam ? (ChessTeam)chessTeam : ChessTeam.NoneTeam,
+                uciPosition = string.IsNullOrEmpty(position) ? requirePosition ? "~position startpos moves " : "open" : "open",
+            });
+
+            if ((ChessTeam)chessTeam == ChessTeam.NoneTeam) {
+                if (requireTeam || (ChessTeam)gamePreferences.teamIndex == ChessTeam.NoneTeam) return;
+                chessTeam = new Random().Next(2);
+            }
+
+            if (requirePosition && string.IsNullOrEmpty(position)) position = "position startpos moves ";
+            if (gamePreferences.requirePosition && string.IsNullOrEmpty(gamePreferences.position))
+                gamePreferences.position = "position startpos moves ";
+
+            if (requireTeam && gamePreferences.requireTeam && chessTeam != (gamePreferences.teamIndex ^ 1)) return;
+            if (requirePosition && gamePreferences.requirePosition && position != gamePreferences.position) return;
+
+            if (requireTeam && !gamePreferences.requireTeam) AssignedTeam = (ChessTeam)chessTeam;
+            if (!requireTeam && (gamePreferences.requireTeam || AssignedTeam == ChessTeam.NoneTeam))
+                AssignedTeam = (ChessTeam)(gamePreferences.teamIndex ^ 1);
+
+            if (!requirePosition && gamePreferences.requirePosition) position = gamePreferences.position;
+
             Send("startGame", $"{position}:{(int)AssignedTeam ^ 1}");
         }
 

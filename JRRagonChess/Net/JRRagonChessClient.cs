@@ -30,7 +30,7 @@ namespace JRRagonGames.JRRagonChess.Net {
         }
         private FindGamePayload gamePreferences = new FindGamePayload();
 
-        public void FindGame(byte[] pongMsg) => PostHttpRequest(
+        private void FindGame(byte[] pongMsg) => PostHttpRequest(
             $"/api/JRRagonChess/findGame",
             new FindGamePayload() {
                 position = gamePreferences.position,

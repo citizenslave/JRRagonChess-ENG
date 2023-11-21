@@ -56,6 +56,7 @@ namespace JRRagonGames.Utilities.Net {
         }
 
         public void Send(string cmd, string msg) {
+            if (cmd != "ping" && cmd != "pong") Console.WriteLine($"{cmd}:*:{msg}");
             byte[] payload = Encoding.UTF8.GetBytes($"{cmd}:{sessionKey}:{msg}");
             if (peerEndpoint == null) {
                 if (!IsListening) {
@@ -144,7 +145,7 @@ namespace JRRagonGames.Utilities.Net {
 
         private void RefreshUpdate(byte[] obj) {
             string msg = Encoding.UTF8.GetString(obj);
-            Console.WriteLine($"[{peerEndpoint}]=>pong:*:{msg.Split(':')[2]}");
+            //Console.WriteLine($"[{peerEndpoint}]=>pong:*:{msg.Split(':')[2]}");
             lastPeerUpdate = DateTime.UtcNow.Ticks;
         }
     }

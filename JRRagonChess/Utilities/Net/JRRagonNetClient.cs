@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
-namespace JRRagonGames.JRRagonChess.Utilities.Net {
+namespace JRRagonGames.Utilities.Net {
     public class JRRagonNetClient : JRRagonUdpClient {
         public struct HttpJsonResponse {
             public HttpStatusCode status;

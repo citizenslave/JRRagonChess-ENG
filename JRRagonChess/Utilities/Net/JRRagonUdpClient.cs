@@ -4,7 +4,7 @@ using System.Text;
 using System.Net;
 using System.Runtime.InteropServices;
 
-namespace JRRagonGames.JRRagonChess.Utilities.Net {
+namespace JRRagonGames.Utilities.Net {
     public class JRRagonUdpClient {
         private UdpClient udpClient = new UdpClient();
 
@@ -56,7 +56,7 @@ namespace JRRagonGames.JRRagonChess.Utilities.Net {
             if (!IsListening || byteData.Length == 0) return;
 
             string cmd = Encoding.UTF8.GetString(byteData).Split(':')[0];
-            
+
             if (cmd == "ping") OnPing?.Invoke(byteData);
             else if (cmd == "pong") OnConnectionEstablished?.Invoke(byteData);
             else if (cmd == "disconnected") OnDisconnected?.Invoke();

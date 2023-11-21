@@ -6,28 +6,11 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 
 using JRRagonGames.JRRagonChess.Types;
-using JRRagonGames.JRRagonChess.Utilities.Net;
+using JRRagonGames.JRRagonChess.Net.Types;
+using JRRagonGames.Utilities.Net;
 
 namespace JRRagonGames.JRRagonChess.Net {
     public class JRRagonChessClient : JRRagonNetClient {
-        public struct PendingGameRequest {
-            public ChessTeam team;
-            public string uciPosition;
-        }
-
-        public struct FindGamePayload {
-            public string position;
-            public int teamIndex;
-            public bool requirePosition;
-            public bool requireTeam;
-            public string sessionKey;
-
-            public readonly string ToJson() => JsonSerializer.SerializeToElement(
-                this,
-                new JsonSerializerOptions { IncludeFields = true }
-            ).ToString();
-        }
-
         public IReadOnlyList<PendingGameRequest> WaitingGameRequests { get => _pendingGameRequests.AsReadOnly(); }
         private List<PendingGameRequest> _pendingGameRequests = new List<PendingGameRequest>();
         public PendingGameRequest MatchingRequest { get; private set; }

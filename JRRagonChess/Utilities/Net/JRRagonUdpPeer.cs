@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JRRagonGames.JRRagonChess.Utilities.Net {
+namespace JRRagonGames.Utilities.Net {
     public class JRRagonUdpPeer : JRRagonUdpClient {
         private UdpClient udpPeer = new UdpClient();
 

@@ -75,5 +75,7 @@ namespace JRRagonGames.Utilities.Net {
             sessionKey = string.Empty;
             IsListening = false;
         }
+
+        protected void ForceDisconnect() => OnDisconnected?.Invoke();
     }
 }

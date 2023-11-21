@@ -64,7 +64,7 @@ namespace JRRagonGames.JRRagonChess.Net {
 
             if ((ChessTeam)chessTeam == ChessTeam.NoneTeam) {
                 if (requireTeam || (ChessTeam)gamePreferences.teamIndex == ChessTeam.NoneTeam) return;
-                chessTeam = new Random().Next(2);
+                chessTeam = gamePreferences.teamIndex ^ 1;
             }
 
             if (requirePosition && string.IsNullOrEmpty(position)) position = "position startpos moves ";
@@ -81,6 +81,8 @@ namespace JRRagonGames.JRRagonChess.Net {
             if (!requirePosition && gamePreferences.requirePosition) position = gamePreferences.position;
 
             Send("startGame", $"{position}:{(int)AssignedTeam ^ 1}");
+            MatchingRequest = _pendingGameRequests[0];
+            _pendingGameRequests.Clear();
         }
 
         public event Action<string>? OnSetUciPosition;

@@ -10,11 +10,11 @@ using JRRagonGames.JRRagonChess.Net.Types;
 using JRRagonGames.Utilities.Net;
 
 namespace JRRagonGames.JRRagonChess.Net {
-    public class JRRagonChessClient : JRRagonNetClient {
+    public class JRRagonChessClient : JRRagonNetClient, IJRRagonChessNet {
         public IReadOnlyList<PendingGameRequest> WaitingGameRequests { get => _pendingGameRequests.AsReadOnly(); }
         private List<PendingGameRequest> _pendingGameRequests = new List<PendingGameRequest>();
         public PendingGameRequest MatchingRequest { get; private set; }
-        public ChessTeam AssignedTeam { get; private set; }
+        public ChessTeam AssignedTeam { get; private set; } = ChessTeam.NoneTeam;
 
         public bool Connect(string url, FindGamePayload gameRequest) {
             gamePreferences = gameRequest;

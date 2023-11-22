@@ -56,7 +56,6 @@ namespace JRRagonGames.Utilities.Net {
         }
 
         public void Send(string cmd, string msg) {
-            //if (cmd != "ping" && cmd != "pong") Console.WriteLine($"{cmd}:*:{msg}");
             byte[] payload = Encoding.UTF8.GetBytes($"{cmd}:{sessionKey}:{msg}");
             if (peerEndpoint == null) {
                 if (!IsListening) {
@@ -102,7 +101,7 @@ namespace JRRagonGames.Utilities.Net {
             string[] cmd = msg.Split(':');
             switch (cmd[0]) {
                 case "ping":
-                    if (sessionKey == cmd[1]) break;
+                    if (sessionKey == cmd[1]) break; // self ping, ignore
                     else {
                         if (peerSessionKey == string.Empty) {
                             peerEndpoint = udpReceiveResult.RemoteEndPoint;
@@ -145,7 +144,6 @@ namespace JRRagonGames.Utilities.Net {
 
         private void RefreshUpdate(byte[] obj) {
             string msg = Encoding.UTF8.GetString(obj);
-            //Console.WriteLine($"[{peerEndpoint}]=>pong:*:{msg.Split(':')[2]}");
             lastPeerUpdate = DateTime.UtcNow.Ticks;
         }
     }

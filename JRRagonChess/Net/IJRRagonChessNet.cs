@@ -10,6 +10,7 @@ namespace JRRagonGames.JRRagonChess.Net {
         public event Action<ChessMove>? OnMakeMove;
         public event Action<string, ChessTeam>? OnRematchRequest;
         public event Action OnDisconnected;
+        public event Action<byte[]> OnConnectionEstablished;
 
         public void Disconnect();
         public void PostMove(ChessMove move);

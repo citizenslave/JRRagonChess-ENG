@@ -14,12 +14,12 @@ namespace JRRagonGames.JRRagonChess.Net {
 
         public bool Connect(string url, FindGamePayload gameRequest) {
             gamePreferences = gameRequest;
-            OnPeerConnected -= FindGame;
+            OnConnectionEstablished -= FindGame;
             OnMessageReceived -= HandleUdpMessage;
             
             Connect(url, 8008);
 
-            OnPeerConnected += FindGame;
+            OnConnectionEstablished += FindGame;
             OnMessageReceived += HandleUdpMessage;
 
             return IsListening;

@@ -15,7 +15,7 @@ namespace JRRagonGames.Utilities.Net {
         private long lastPeerUpdate;
 
         public bool IsPeer { get; private set; } = false;
-        public event Action<byte[]>? OnPeerConnected;
+        public event Action<byte[]>? OnConnectionEstablished;
 
         public bool Connect(string url, ushort udpPort) {
             byte[] keyData = new byte[256];
@@ -34,9 +34,9 @@ namespace JRRagonGames.Utilities.Net {
             OnPing -= HandleClientPing;
             OnPing += HandleClientPing;
 
-            OnConnectionEstablished -= RefreshUpdate;
-            OnConnectionEstablished -= DisconnectPeer;
-            OnConnectionEstablished += DisconnectPeer;
+            OnPongReceived -= RefreshUpdate;
+            OnPongReceived -= DisconnectPeer;
+            OnPongReceived += DisconnectPeer;
 
             Uri uri = new Uri("udp://" + url);
             Connect(uri.Host, (ushort)uri.Port, sessionKey);
@@ -76,9 +76,9 @@ namespace JRRagonGames.Utilities.Net {
         }
 
         private void DisconnectPeer(byte[] obj) {
-            OnConnectionEstablished -= DisconnectPeer;
-            OnConnectionEstablished -= RefreshUpdate;
-            OnConnectionEstablished += RefreshUpdate;
+            OnPongReceived -= DisconnectPeer;
+            OnPongReceived -= RefreshUpdate;
+            OnPongReceived += RefreshUpdate;
 
             peerEndpoint = null;
             peerSessionKey = string.Empty;
@@ -87,7 +87,7 @@ namespace JRRagonGames.Utilities.Net {
                 peerSessionKey = Encoding.UTF8.GetString(obj).Split(':')[1];
                 lastPeerUpdate = DateTime.UtcNow.Ticks;
 
-                OnPeerConnected?.Invoke(obj);
+                OnConnectionEstablished?.Invoke(obj);
                 SendPingLoop(true);
             }
 
@@ -110,10 +110,10 @@ namespace JRRagonGames.Utilities.Net {
                             peerSessionKey = cmd[1];
                             lastPeerUpdate = DateTime.UtcNow.Ticks;
 
-                            OnConnectionEstablished -= DisconnectPeer;
-                            OnConnectionEstablished -= RefreshUpdate;
-                            OnConnectionEstablished += RefreshUpdate;
-                            OnPeerConnected?.Invoke(udpReceiveResult.Buffer);
+                            OnPongReceived -= DisconnectPeer;
+                            OnPongReceived -= RefreshUpdate;
+                            OnPongReceived += RefreshUpdate;
+                            OnConnectionEstablished?.Invoke(udpReceiveResult.Buffer);
                             SendPingLoop(true);
                         } else if (peerSessionKey != cmd[1]) break;
 

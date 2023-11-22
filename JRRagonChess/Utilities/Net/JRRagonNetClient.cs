@@ -19,22 +19,30 @@ namespace JRRagonGames.Utilities.Net {
         public string CurrentHttpUrl { get; private set; } = string.Empty;
         public string CurrentApiUrl { get; private set; } = string.Empty;
 
+        public event Action<byte[]> OnConnectionEstablished {
+            add => OnPongReceived += value;
+            remove => OnPongReceived -= value;
+        }
 
 
-        public void Connect(string url, string api) => PostHttpRequest(
-            $"/api/{CurrentApiUrl = api}/pong",
-            new JsonObject { ["userInfo"] = "GUEST" }
-        ).ContinueWith(t => {
-            JsonElement readPongData = t.Result.json;
 
-            OnPing -= SendPong;
-            Connect(
-                new Uri(CurrentHttpUrl = url).Host,
-                readPongData.GetProperty("udpPort").GetUInt16(),
-                readPongData.GetProperty("sessionKey").GetString() ?? string.Empty
-            );
-            OnPing += SendPong;
-        });
+        public void Connect(string url, string api) {
+            CurrentHttpUrl = url;
+            PostHttpRequest(
+                $"/api/{CurrentApiUrl = api}/pong",
+                new JsonObject { ["userInfo"] = "GUEST" }
+            ).ContinueWith(t => {
+                JsonElement readPongData = t.Result.json;
+
+                OnPing -= SendPong;
+                Connect(
+                    new Uri(url).Host,
+                    readPongData.GetProperty("udpPort").GetUInt16(),
+                    readPongData.GetProperty("sessionKey").GetString() ?? string.Empty
+                );
+                OnPing += SendPong;
+            });
+        }
 
         private void SendPong(byte[] byteData) => PostHttpRequest(
             $"/api/{CurrentApiUrl}/pong",

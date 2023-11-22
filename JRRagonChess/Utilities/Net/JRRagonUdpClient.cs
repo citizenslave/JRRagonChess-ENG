@@ -14,7 +14,7 @@ namespace JRRagonGames.Utilities.Net {
 
 
         protected event Action<byte[]>? OnPing;
-        public event Action<byte[]>? OnConnectionEstablished;
+        protected event Action<byte[]>? OnPongReceived;
         public event Action<byte[]>? OnMessageReceived;
         public event Action? OnDisconnected;
 
@@ -36,7 +36,7 @@ namespace JRRagonGames.Utilities.Net {
             return IsListening;
         }
 
-        protected void ConnectionEstablished(byte[] data) => OnConnectionEstablished?.Invoke(data);
+        protected void ConnectionEstablished(byte[] data) => OnPongReceived?.Invoke(data);
         protected void MessageReceived(byte[] data) => ProcessMessage(data);
         protected void Send(byte[] data) => udpClient.Send(data, data.Length);
 
@@ -53,13 +53,12 @@ namespace JRRagonGames.Utilities.Net {
             string cmd = Encoding.UTF8.GetString(byteData).Split(':')[0];
 
             if (cmd == "ping") OnPing?.Invoke(byteData);
-            else if (cmd == "pong") OnConnectionEstablished?.Invoke(byteData);
+            else if (cmd == "pong") OnPongReceived?.Invoke(byteData);
             else if (cmd == "disconnected") { Disconnect();  OnDisconnected?.Invoke(); }
             else OnMessageReceived?.Invoke(byteData);
         }
 
         public virtual void Disconnect() {
-            //Console.WriteLine("close udp");
             udpClient.Close();
             udpClient = new UdpClient();
 

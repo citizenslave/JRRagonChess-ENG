@@ -25,7 +25,7 @@ namespace JRRagonGames.Utilities.Net {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     udpClient.Client.IOControl(-1744830452, new byte[] { 0, 0, 0, 0 }, null);
                 udpClient.Connect(url, udpPort);
-                udpClient.ReceiveAsync().ContinueWith(t => HandleMessage(IsListening ? t.Result.Buffer : new byte[0]));
+                udpClient.ReceiveAsync().ContinueWith(t => HandleMessage(IsListening ? t.Result : default));
 
                 sessionKey = _sessionKey;
                 IsListening = true;
@@ -38,33 +38,25 @@ namespace JRRagonGames.Utilities.Net {
         }
 
         protected void ConnectionEstablished(byte[] data) => OnConnectionEstablished?.Invoke(data);
-        protected void MessageReceived(byte[] data) => HandleMessage(data);
+        protected void MessageReceived(byte[] data) => ProcessMessage(data);
         protected void Send(byte[] data) => udpClient.Send(data, data.Length);
 
-        private void ReceiveMessage(IAsyncResult ar) {
+        private void HandleMessage(UdpReceiveResult result) {
+            if (!IsListening || result == default) return;
+            ProcessMessage(result.Buffer);
+
             if (!IsListening) return;
-            IPEndPoint remoteEndpoint = (IPEndPoint)udpClient.Client.LocalEndPoint;
-            byte[] byteData = udpClient.EndReceive(ar, ref remoteEndpoint);
 
-            if (IsListening) {
-                HandleMessage(byteData);
-                udpClient.BeginReceive(new AsyncCallback(ReceiveMessage), null);
+            udpClient.ReceiveAsync().ContinueWith(t => HandleMessage(IsListening ? t.Result : default));
             }
-        }
 
-        private void HandleMessage(byte[] byteData) {
-            if (!IsListening || byteData.Length == 0) return;
-
+        private void ProcessMessage(byte[] byteData) {
             string cmd = Encoding.UTF8.GetString(byteData).Split(':')[0];
 
             if (cmd == "ping") OnPing?.Invoke(byteData);
             else if (cmd == "pong") OnConnectionEstablished?.Invoke(byteData);
             else if (cmd == "disconnected") OnDisconnected?.Invoke();
             else OnMessageReceived?.Invoke(byteData);
-
-            if (!IsListening) return;
-
-            udpClient.ReceiveAsync().ContinueWith(t => HandleMessage(IsListening ? t.Result.Buffer : new byte[0]));
         }
 
         public virtual void Disconnect() {

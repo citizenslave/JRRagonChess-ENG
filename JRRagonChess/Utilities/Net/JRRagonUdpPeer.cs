@@ -56,7 +56,7 @@ namespace JRRagonGames.Utilities.Net {
         }
 
         public void Send(string cmd, string msg) {
-            if (cmd != "ping" && cmd != "pong") Console.WriteLine($"{cmd}:*:{msg}");
+            //if (cmd != "ping" && cmd != "pong") Console.WriteLine($"{cmd}:*:{msg}");
             byte[] payload = Encoding.UTF8.GetBytes($"{cmd}:{sessionKey}:{msg}");
             if (peerEndpoint == null) {
                 if (!IsListening) {

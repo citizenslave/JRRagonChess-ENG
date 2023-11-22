@@ -77,7 +77,7 @@ namespace JRRagonGames.JRRagonChess.Net {
 
         private void HandleUdpMessage(byte[] data) {
             string msg = Encoding.UTF8.GetString(data); pendingRematch = string.Empty;
-            Console.WriteLine(msg);
+            //Console.WriteLine(sessionKey[..11] + ": " + msg);
             string[] msgParts = msg.Split(":");
             switch (msgParts[0]) {
                 case "startGame": AssignedTeam = (ChessTeam)int.Parse(msgParts[2]); OnSetUciPosition?.Invoke(msgParts[1]); break;

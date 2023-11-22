@@ -68,6 +68,7 @@ namespace JRRagonGames.Utilities.Net {
         }
 
         public virtual void Disconnect() {
+            //Console.WriteLine("close udp");
             udpClient.Close();
             udpClient = new UdpClient();
 

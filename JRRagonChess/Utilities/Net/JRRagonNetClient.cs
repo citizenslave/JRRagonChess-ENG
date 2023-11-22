@@ -21,28 +21,20 @@ namespace JRRagonGames.Utilities.Net {
 
 
 
-        public bool Connect(string url, string api) {
-            try {
-                CurrentHttpUrl = url; CurrentApiUrl = api;
-                Task<HttpJsonResponse> pingResponseTask = PostHttpRequest(
-                    $"/api/{api}/pong",
-                    new JsonObject { ["userInfo"] = "GUEST" }
-                );
-                pingResponseTask.Wait();
-                JsonElement readPongData = pingResponseTask.Result.json;
-                Console.WriteLine(readPongData.ToString());
+        public void Connect(string url, string api) => PostHttpRequest(
+            $"/api/{CurrentApiUrl = api}/pong",
+            new JsonObject { ["userInfo"] = "GUEST" }
+        ).ContinueWith(t => {
+            JsonElement readPongData = t.Result.json;
 
-                OnPing -= SendPong;
-                Connect(
-                    new Uri(url).Host,
-                    readPongData.GetProperty("udpPort").GetUInt16(),
-                    readPongData.GetProperty("sessionKey").GetString() ?? string.Empty
-                );
-                OnPing += SendPong;
-            } catch { }
-
-            return IsListening;
-        }
+            OnPing -= SendPong;
+            Connect(
+                new Uri(CurrentHttpUrl = url).Host,
+                readPongData.GetProperty("udpPort").GetUInt16(),
+                readPongData.GetProperty("sessionKey").GetString() ?? string.Empty
+            );
+            OnPing += SendPong;
+        });
 
         private void SendPong(byte[] byteData) => PostHttpRequest(
             $"/api/{CurrentApiUrl}/pong",

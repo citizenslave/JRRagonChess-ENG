@@ -29,7 +29,6 @@ namespace JRRagonGames.Utilities.Net {
 
                 sessionKey = _sessionKey;
                 IsListening = true;
-                OnDisconnected += Disconnect;
 
                 Send(Encoding.UTF8.GetBytes($"ping:{sessionKey}:connect"));
             } catch (Exception e) { Console.WriteLine(e.Message); }
@@ -48,14 +47,14 @@ namespace JRRagonGames.Utilities.Net {
             if (!IsListening) return;
 
             udpClient.ReceiveAsync().ContinueWith(t => HandleMessage(IsListening ? t.Result : default));
-            }
+        }
 
         private void ProcessMessage(byte[] byteData) {
             string cmd = Encoding.UTF8.GetString(byteData).Split(':')[0];
 
             if (cmd == "ping") OnPing?.Invoke(byteData);
             else if (cmd == "pong") OnConnectionEstablished?.Invoke(byteData);
-            else if (cmd == "disconnected") OnDisconnected?.Invoke();
+            else if (cmd == "disconnected") { Disconnect();  OnDisconnected?.Invoke(); }
             else OnMessageReceived?.Invoke(byteData);
         }
 
@@ -64,7 +63,6 @@ namespace JRRagonGames.Utilities.Net {
             udpClient.Close();
             udpClient = new UdpClient();
 
-            OnDisconnected -= Disconnect;
             sessionKey = string.Empty;
             IsListening = false;
         }

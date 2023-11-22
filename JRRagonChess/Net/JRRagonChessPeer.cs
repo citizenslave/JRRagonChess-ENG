@@ -12,12 +12,12 @@ namespace JRRagonGames.JRRagonChess.Net {
         public PendingGameRequest MatchingRequest { get; private set; }
         public ChessTeam AssignedTeam { get; private set; } = ChessTeam.NoneTeam;
 
-        public bool Connect(string url, FindGamePayload gameRequest) {
+        public bool Connect(string url, FindGamePayload gameRequest, ushort udpPort) {
             gamePreferences = gameRequest;
             OnConnectionEstablished -= FindGame;
             OnMessageReceived -= HandleUdpMessage;
             
-            Connect(url, 8008);
+            Connect(url, udpPort);
 
             OnConnectionEstablished += FindGame;
             OnMessageReceived += HandleUdpMessage;

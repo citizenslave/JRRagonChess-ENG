@@ -46,9 +46,7 @@ namespace JRRagonGames.Utilities.Net {
 
         private void SendPong(byte[] byteData) => PostHttpRequest(
             $"/api/{CurrentApiUrl}/pong",
-            new JsonObject {
-                ["sessionKey"] = Encoding.UTF8.GetString(byteData).Split(':')[1],
-            }
+            new JsonObject { ["sessionKey"] = Encoding.UTF8.GetString(byteData).Split(':')[1] }
         );
 
         public override void Disconnect() => PostHttpRequest(

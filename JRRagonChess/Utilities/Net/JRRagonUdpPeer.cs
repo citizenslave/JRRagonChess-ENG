@@ -40,7 +40,6 @@ namespace JRRagonGames.Utilities.Net {
 
             Uri uri = new Uri("udp://" + url);
             Connect(uri.Host, (ushort)uri.Port, sessionKey);
-            Console.WriteLine("Connecting...");
 
             return IsListening;
         }

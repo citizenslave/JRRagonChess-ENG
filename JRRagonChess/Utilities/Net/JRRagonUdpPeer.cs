@@ -27,7 +27,7 @@ namespace JRRagonGames.Utilities.Net {
                 udpPeer = new UdpClient(udpPort);
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     udpPeer.Client.IOControl(-1744830452, new byte[] { 0, 0, 0, 0 }, null);
-                udpPeer.ReceiveAsync().ContinueWith(t => HandleMessage(IsPeer ? t.Result : default));
+                udpPeer.ReceiveAsync().ContinueWith(t => HandleMessage(!t.IsFaulted && IsPeer ? t.Result : default));
                 IsPeer = true;
             }
 
@@ -123,7 +123,7 @@ namespace JRRagonGames.Utilities.Net {
                     break;
                 default: MessageReceived(udpReceiveResult.Buffer); break;
             }
-            if (IsPeer) udpPeer.ReceiveAsync().ContinueWith(t => HandleMessage(IsPeer ? t.Result : default));
+            if (IsPeer) udpPeer.ReceiveAsync().ContinueWith(t => HandleMessage(!t.IsFaulted && IsPeer ? t.Result : default));
         }
 
         private void HandleClientPing(byte[] byteData) {

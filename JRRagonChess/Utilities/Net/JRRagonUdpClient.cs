@@ -25,7 +25,7 @@ namespace JRRagonGames.Utilities.Net {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     udpClient.Client.IOControl(-1744830452, new byte[] { 0, 0, 0, 0 }, null);
                 udpClient.Connect(url, udpPort);
-                udpClient.ReceiveAsync().ContinueWith(t => HandleMessage(IsListening ? t.Result : default));
+                udpClient.ReceiveAsync().ContinueWith(t => HandleMessage(!t.IsFaulted && IsListening ? t.Result : default));
 
                 sessionKey = _sessionKey;
                 IsListening = true;
@@ -46,7 +46,7 @@ namespace JRRagonGames.Utilities.Net {
 
             if (!IsListening) return;
 
-            udpClient.ReceiveAsync().ContinueWith(t => HandleMessage(IsListening ? t.Result : default));
+            udpClient.ReceiveAsync().ContinueWith(t => HandleMessage(!t.IsFaulted && IsListening ? t.Result : default));
         }
 
         private void ProcessMessage(byte[] byteData) {
